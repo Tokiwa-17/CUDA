@@ -7,11 +7,5 @@ class matrixNaive{
 
 public:
     template<typename T>
-    __global__ void gpuMatrixMul(T* d_A, T* d_B, T* d_C, int m, int n, int k);
+    void gpuMatrixMul(T* d_A, T* d_B, T* d_C, int m, int n, int k);
 };
-
-
-
-
-
-
