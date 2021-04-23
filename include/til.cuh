@@ -86,7 +86,7 @@ void initialDataInt(int* ip, int size){
     time_t t;
     srand((unsigned)time(&t));
     for (int i = 0; i < size; i++){
-        ip[i] = int(rand() & 0xff);
+        ip[i] = int((rand() % 100) - 50);
     }
 }
 
