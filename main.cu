@@ -20,7 +20,7 @@ int main(int argc, char ** argv){
     CHECK(cudaSetDevice(dev));
 
     // input m, n, k
-    int m = 10000, n = 10000, k = 10000;
+    int m = 100, n = 100, k = 100;
     if(argc > 1) m = atoi(argv[1]);
     if(argc > 2) n = atoi(argv[2]);
     if(argc > 3) k = atoi(argv[3]);
