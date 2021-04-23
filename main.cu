@@ -4,6 +4,8 @@
 #include <cuda_runtime.h>
 #include "./include/freshman.cuh"
 #include "./include/matrixNaive.cuh"
+
+#define BLOCK_SIZE 32
 // Include local CUDA header files.
 
 /*
