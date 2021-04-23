@@ -4,42 +4,15 @@
 #include <cuda_runtime.h>
 #include "./include/til.cuh"
 #include "./include/matrixNaive.cuh"
+#include "./include/matrixTile.cuh"
 
 #define BLOCK_SIZE 32
 // Include local CUDA header files.
 
-/*
-*********************************************************************
-function name: cpuMatrixMul
-description: Multiplication two matrix in CPU.
-parameters: 
-    &h_A CPU host pointer to a (m, n) matrix (A)
-    &h_B CPU host pointer to a (n, k) matrix (B)
-    &h_C CPU host output pointer to a (m, k) matrix (C) 
-    to store the result
-return: none
-*********************************************************************
-*/
-void cpuMatrixMul(int *h_A, int * h_B, int* h_C, int m, int n, int k){
-    for(int i = 0;i < m;i++)
-        for(int j = 0;j < k;j++){
-            int sum = 0;
-            for(int l = 0;l < n;l++)
-                sum += h_A[i * n + l] * h_B[l * k + j];
-            h_C[i * k + j] = sum;
-        }
-}
-
-
-
 int main(int argc, char ** argv){
     // set up device
     int dev = 0;
-    cudaDeviceProp deviceProp;
-    CHECK(cudaGetDeviceProperties(&deviceProp, dev));
-    printf("%s starting reduction at ", argv[0]);
-    printf("device %d: %s \n", dev, deviceProp.name);
-    CHECK(cudaSetDevice(dev));
+    initDevice(dev);
 
     // input m, n, k
     int m = 100, n = 100, k = 100;
@@ -68,11 +41,6 @@ int main(int argc, char ** argv){
     cudaMemcpy(d_A, h_A, sizeof(int) * (m * n), cudaMemcpyHostToDevice);
     cudaMemcpy(d_B, h_B, sizeof(int) * (n * k), cudaMemcpyHostToDevice);
 
-    unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    dim3 grid(gridRows, gridCols);
-    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
-
     // CPU Matrix multiplication
     double iStart = cpuSecond();
     cpuMatrixMul(h_A, h_B, h_C, m, n, k);
@@ -80,6 +48,11 @@ int main(int argc, char ** argv){
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
 
     // GPU Matrix multiplication
+    unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    dim3 grid(gridRows, gridCols);
+    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+
     iStart = cpuSecond();
     gpuMatrixMul<< <grid, block >> > (d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
@@ -91,6 +64,20 @@ int main(int argc, char ** argv){
         "%d>>>\n", iElaps, grid.x, block.x);
 
     // Check result
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by tile
+    thread.x = TILE_SIZE, threadIdx.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulTile<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+
+    printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
     return 0;
 }
