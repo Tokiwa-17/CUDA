@@ -1,6 +1,6 @@
 // Include C++ header files.
 #include <iostream>
-//#include "include/freshman.cuh"
+#include "include/freshman.cuh"
 #include "include/matrix.cuh"
 // Include local CUDA header files.
 
