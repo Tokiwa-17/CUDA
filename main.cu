@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
-#include "freshman.cuh"
 #include "matrix.cuh"
+#include "freshman.cuh"
 
 int main(int argc, char ** argv){
     // set up device
