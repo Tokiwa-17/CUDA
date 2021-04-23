@@ -51,7 +51,7 @@ INC_DIR = include
 EXE = main
 
 # Object files:
-OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/matrix.o
+OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/matrixNaive.o
 
 ##########################################################
 
