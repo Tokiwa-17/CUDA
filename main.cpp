@@ -10,7 +10,7 @@
 int main() {
 
     // Initialize arrays A, B, and C.
-    std::cout << "test" << endl;
+    std::cout << "test" << std::endl;
 
     return 0;
 }
