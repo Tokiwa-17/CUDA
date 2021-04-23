@@ -6,8 +6,6 @@
 #include "./include/matrixNaive.cuh"
 #include "./include/matrixTile.cuh"
 
-#define BLOCK_SIZE 32
-#define TILE_SIZE 32
 // Include local CUDA header files.
 
 int main(int argc, char ** argv){
