@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
 #include "../include/matrixTile.cuh"
+#define TILE_SIZE 16
 
 __global__ void gpuMatrixMulTile(int* d_A, int* d_B, int* d_C, int m, int n, int k){
     
     __shared__ int A_tile[TILE_SIZE][TILE_SIZE];
-    __shared__ int B_tile[TILE_SIZE][TILE_SIZE]；
+    __shared__ int B_tile[TILE_SIZE][TILE_SIZE];
 
     int bx = blockIdx.x, by = blockIdx.y;
     int tx = threadIdx.x, ty = threadIdx.y;
