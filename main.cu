@@ -67,7 +67,7 @@ int main(int argc, char ** argv){
     checkResult(h_C, h_odata, m * k);
 
     // GPU Matrix multiplication by tile
-    thread.x = TILE_SIZE, threadIdx.y = TILE_SIZE;
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
     grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
     iStart = cpuSecond();
     gpuMatrixMulTile<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
