@@ -6,7 +6,27 @@
 #include "include/matrix.cuh"
 // Include local CUDA header files.
 
-
+/*
+*********************************************************************
+function name: cpuMatrixMul
+description: Multiplication two matrix in CPU.
+parameters: 
+    &h_A CPU host pointer to a (m, n) matrix (A)
+    &h_B CPU host pointer to a (n, k) matrix (B)
+    &h_C CPU host output pointer to a (m, k) matrix (C) 
+    to store the result
+return: none
+*********************************************************************
+*/
+void cpuMatrixMul(int *h_A, int * h_B, int* h_C, int m, int n, int k){
+    for(int i = 0;i < m;i++)
+        for(int j = 0;j < k;j++){
+            int sum = 0;
+            for(int l = 0;l < n;l++)
+                sum += h_A[i * n + l] * h_B[l * k + j];
+            h_C[i * k + j] = sum;
+        }
+}
 
 
 
@@ -58,7 +78,7 @@ int main(int argc, char ** argv){
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
 
     // GPU Matrix multiplication
-    iStart = cpuSecond();
+    /*iStart = cpuSecond();
     gpuMatrixMul << <grid, block >> > (d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
     CHECK(cudaGetLastError());
@@ -70,5 +90,6 @@ int main(int argc, char ** argv){
 
     // Check result
     checkResult(h_C, h_odata, m * k);
+    */
     return 0;
 }
