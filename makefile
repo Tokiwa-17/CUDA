@@ -3,14 +3,14 @@
 ## USER SPECIFIC DIRECTORIES ##
 
 # CUDA directory:
-CUDA_ROOT_DIR=/usr/lib/cuda
+CUDA_ROOT_DIR=/usr/local/cuda
 
 ##########################################################
 
 ## CC COMPILER OPTIONS ##
 
 # CC compiler options:
-CC=gcc
+CC=g++
 CC_FLAGS=
 CC_LIBS=
 
@@ -20,7 +20,7 @@ CC_LIBS=
 
 # NVCC compiler options:
 NVCC=nvcc
-NVCC_FLAGS=-arch sm_60
+NVCC_FLAGS=
 NVCC_LIBS=
 
 # CUDA library directory:
