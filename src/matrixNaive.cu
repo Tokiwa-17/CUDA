@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
-#include "../include/matrix.cuh"
+#include "../include/matrixNaive.cuh"
 
 /*
 *********************************************************************
