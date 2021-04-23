@@ -16,7 +16,7 @@ return: none
 __global__ void gpuMatrixMul(int* d_A, int* d_B, int* d_C, int m, int n, int k) {
     int row = threadIdx.x + blockDim.x * blockIdx.x;
     int col = threadIdx.y + blockDim.y * blockIdx.y;
-    T sum = 0;
+    int sum = 0;
     if (row < m && col < k) {
         for (int i = 0;i < n;i++)
             sum += d_A[row * n + i] * d_B[i * k + col];
