@@ -10,6 +10,30 @@
 }
 
 
+/*
+*********************************************************************
+function name: cpuMatrixMul
+description: Multiplication two matrix in CPU.
+parameters: 
+    &h_A CPU host pointer to a (m, n) matrix (A)
+    &h_B CPU host pointer to a (n, k) matrix (B)
+    &h_C CPU host output pointer to a (m, k) matrix (C) 
+    to store the result
+return: none
+*********************************************************************
+*/
+void cpuMatrixMul(int *h_A, int * h_B, int* h_C, int m, int n, int k){
+    for(int i = 0;i < m;i++)
+        for(int j = 0;j < k;j++){
+            int sum = 0;
+            for(int l = 0;l < n;l++)
+                sum += h_A[i * n + l] * h_B[l * k + j];
+            h_C[i * k + j] = sum;
+        }
+}
+
+
+
 #include <time.h>
 #ifdef _WIN32
 #	include <windows.h>
@@ -36,6 +60,7 @@ int gettimeofday(struct timeval* tp, void* tzp)
     return (0);
 }
 #endif
+
 double cpuSecond(){
     struct timeval tp;
     gettimeofday(&tp, NULL);
