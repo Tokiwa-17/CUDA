@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
-#include "freshman.h"
-#include "matrix.h"
+#include "freshman.cuh"
+#include "matrix.cuh"
 
 /*
 *********************************************************************
