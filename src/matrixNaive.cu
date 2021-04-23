@@ -13,7 +13,7 @@ parameters :
 return: none
 *********************************************************************
 */
-template<typename>
+template<typename T>
 __global__ void matrixNaive::gpuMatrixMul(T* d_A, T* d_B, T* d_C, int m, int n, int k) {
     int row = threadIdx.x + blockDim.x * blockIdx.x;
     int col = threadIdx.y + blockDim.y * blockIdx.y;
