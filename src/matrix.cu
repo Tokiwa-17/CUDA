@@ -1,70 +1,47 @@
-// CUDA libraries.
-#include <cuda.h>
+#include <stdio.h>
 #include <cuda_runtime.h>
+#include "matrix.cuh"
 
-// Include associated header file.
-#include "../include/cuda_kernel.cuh"
-
-
-
-
-
-/**
- * Sample CUDA device function which adds an element from array A and array B.
- *
- */
-__global__ void cuda_kernel(double *A, double *B, double *C, int arraySize){
-    // Get thread ID.
-    int tid = blockDim.x * blockIdx.x + threadIdx.x;
-
-    // Check if thread is within array bounds.
-    if ( tid < arraySize ) {
-        // Add a and b.
-        C[tid] = A[tid] + B[tid];
+/*
+*********************************************************************
+function name : gpuMatrixMul
+description : multiplication of two matrix
+parameters :
+    &d_A GPU device pointer to a (m, n) matrix(A)
+    &d_B GPU device pointer to a (n, k) matrix(B)
+    &d_C GPU device output pointer to a (m, k) matrix(C)
+return: none
+*********************************************************************
+*/
+__global__ void gpuMatrixMul(int* d_A, int* d_B, int* d_C, int m, int n, int k) {
+    int row = threadIdx.x + blockDim.x * blockIdx.x;
+    int col = threadIdx.y + blockDim.y * blockIdx.y;
+    int sum = 0;
+    if (row < m && col < k) {
+        for (int i = 0;i < n;i++)
+            sum += d_A[row * n + i] * d_B[i * k + col];
+        d_C[row * k + col] = sum;
     }
 }
 
-
-
-/**
- * Wrapper function for the CUDA kernel function.
- * @param A Array A.
- * @param B Array B.
- * @param C Sum of array elements A and B directly across.
- * @param arraySize Size of arrays A, B, and C.
- */
-void kernel(double *A, double *B, double *C, int arraySize) {
-
-    // Initialize device pointers.
-    double *d_A, *d_B, *d_C;
-
-    // Allocate device memory.
-    cudaMalloc((void**) &d_A, arraySize * sizeof(double));
-    cudaMalloc((void**) &d_B, arraySize * sizeof(double));
-    cudaMalloc((void**) &d_C, arraySize * sizeof(double));
-
-    // Transfer arrays a and b to device.
-    cudaMemcpy(d_A, A, arraySize * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_B, B, arraySize * sizeof(double), cudaMemcpyHostToDevice);
-
-    // Calculate blocksize and gridsize.
-    dim3 blockSize(512, 1, 1);
-    dim3 gridSize(512 / arraySize + 1, 1);
-
-    // Launch CUDA kernel.
-    cuda_kernel<<<gridSize, blockSize>>>(d_A, d_B, d_C, arraySize);
-
-    // Copy result array c back to host memory.
-    cudaMemcpy(C, d_C, arraySize * sizeof(double), cudaMemcpyDeviceToHost);
+/*
+*********************************************************************
+function name: cpuMatrixMul
+description: Multiplication two matrix in CPU.
+parameters: 
+    &h_A CPU host pointer to a (m, n) matrix (A)
+    &h_B CPU host pointer to a (n, k) matrix (B)
+    &h_C CPU host output pointer to a (m, k) matrix (C) 
+    to store the result
+return: none
+*********************************************************************
+*/
+void cpuMatrixMul(int *h_A, int * h_B, int* h_C, int m, int n, int k){
+    for(int i = 0;i < m;i++)
+        for(int j = 0;j < k;j++){
+            int sum = 0;
+            for(int l = 0;l < n;l++)
+                sum += h_A[i * n + l] * h_B[l * k + j];
+            h_C[i * k + j] = sum;
+        }
 }
-
-
-
-
-
-
-
-
-
-
-
