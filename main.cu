@@ -80,7 +80,7 @@ int main(int argc, char ** argv){
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
 
     // GPU Matrix multiplication
-    /*iStart = cpuSecond();
+    iStart = cpuSecond();
     gpuMatrixMul << <grid, block >> > (d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
     CHECK(cudaGetLastError());
@@ -92,6 +92,5 @@ int main(int argc, char ** argv){
 
     // Check result
     checkResult(h_C, h_odata, m * k);
-    */
     return 0;
 }
