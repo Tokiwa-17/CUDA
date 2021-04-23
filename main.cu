@@ -81,7 +81,7 @@ int main(int argc, char ** argv){
 
     // GPU Matrix multiplication
     iStart = cpuSecond();
-    gpuMatrixMul<int> << <grid, block >> > (d_A, d_B, d_C, m, n, k);
+    gpuMatrixMul<< <grid, block >> > (d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
