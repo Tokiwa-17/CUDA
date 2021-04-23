@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <cuda_runtime.h>
-#include "./include/freshman.cuh"
+#include "./include/til.cuh"
 #include "./include/matrixNaive.cuh"
 
 #define BLOCK_SIZE 32
