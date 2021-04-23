@@ -48,7 +48,7 @@ INC_DIR = include
 ## Make variables ##
 
 # Target executable name:
-EXE = run_test
+EXE = main
 
 # Object files:
 OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/matrix.o
