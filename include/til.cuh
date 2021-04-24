@@ -1,5 +1,10 @@
 #ifndef FRESHMAN_H
 #define FRESHMAN_H
+
+#define BLOCK_SIZE 32
+#define TILE_SIZE 16
+#define WPT 8
+
 #define CHECK(call){\
   const cudaError_t error=call;\
   if(error!=cudaSuccess){\
@@ -93,7 +98,7 @@ void initialDataInt(int* ip, int size){
 void printMatrix(int* C, const int nx, const int ny)
 {
     int* ic = C;
-    printf("Matrix<%d,%d>\n:", ny, nx);
+    printf("Matrix<%d,%d>:\n", ny, nx);
     for (int i = 0;i < ny;i++)
     {
         for (int j = 0;j < nx;j++)
