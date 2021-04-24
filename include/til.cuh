@@ -1,6 +1,11 @@
 #pragma once
 #include <time.h>
-#include <sys/time.h>
+#ifdef _WIN32
+#	include <windows.h>
+#else
+#	include <sys/time.h>
+#endif
+#ifdef _WIN32
 #define CHECK(call){\
   const cudaError_t error=call;\
   if(error!=cudaSuccess){\
@@ -25,14 +30,7 @@ return: none
 */
 void cpuMatrixMul(int *h_A, int * h_B, int* h_C, int m, int n, int k);
 
-/*
-#include <time.h>
-#ifdef _WIN32
-#	include <windows.h>
-#else
-#	include <sys/time.h>
-#endif
-#ifdef _WIN32*/
+
 int gettimeofday(struct timeval* tp, void* tzp);
 //#endif
 
