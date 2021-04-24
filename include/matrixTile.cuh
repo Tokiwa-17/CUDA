@@ -46,7 +46,7 @@
 */
 
 
-__global__ void gpuMatrixMulTile(int* A, int* B, int* C, int m, int n, int k){
+__global__ void gpuMatrixMulTile(int* A, int* B, int* C, int m, int k, int n){
 
     // Thread identifiers
     int row = threadIdx.x, col = threadIdx.y;
@@ -55,7 +55,7 @@ __global__ void gpuMatrixMulTile(int* A, int* B, int* C, int m, int n, int k){
 
     // local memory to fit a tile
     __shared__ int ATile[TILE_SIZE][TILE_SIZE];
-    __shared__ int BTILE[TILE_SIZE][TILE_SIZE];
+    __shared__ int BTile[TILE_SIZE][TILE_SIZE];
     
     int acc = 0;
 
