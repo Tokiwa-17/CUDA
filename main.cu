@@ -15,8 +15,7 @@ int main(int argc, char ** argv){
     initDevice(dev);
 
     // input m, n, k
-    //int m = 320, n = 320, k = 320;
-    int m = 16, n = 16, k = 16;
+    int m = 32, n = 32, k = 32;
     if(argc > 1) m = atoi(argv[1]);
     if(argc > 2) n = atoi(argv[2]);
     if(argc > 3) k = atoi(argv[3]);
