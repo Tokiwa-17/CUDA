@@ -50,4 +50,6 @@ __global__ void gpuMatrixMulTileWPT(int* d_A, int* d_B, int* d_C, int m, int n, 
 
     d_C[cIdx + k * ty + 2 * tx] = accu[0];
     d_C[cIdx + k * ty + 2 * tx + 1] = accu[1];
+
+    __syncthreads();
 }
