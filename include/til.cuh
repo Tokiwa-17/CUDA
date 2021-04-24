@@ -1,5 +1,4 @@
-#ifndef FRESHMAN_H
-#define FRESHMAN_H
+#pragma once
 
 #define BLOCK_SIZE 32
 #define TILE_SIZE 16
@@ -131,4 +130,3 @@ void checkResult(int* hostRef, int* gpuRef, const int N){
     }
     printf("Check result success!\n");
 }
-#endif//FRESHMAN_H
