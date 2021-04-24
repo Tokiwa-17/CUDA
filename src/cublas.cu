@@ -4,7 +4,7 @@
 #include "../include/config.cuh"
 #include "../include/til.cuh"
 
-__global__ void cublas(int* d_A, int* d_B, int* d_C, int m, int n, int k){
+void cublas(int* d_A, int* d_B, int* d_C, int m, int n, int k){
     cublasHandle_t handle;
     cublasCreate(&handle);
     float al=1.0f, bet=0;
