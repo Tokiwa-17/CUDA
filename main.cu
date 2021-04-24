@@ -15,7 +15,7 @@ int main(int argc, char ** argv){
     initDevice(dev);
 
     // input m, n, k
-    int m = 320, n = 320, k = 320;
+    int m = 32, n = 32, k = 32;
     if(argc > 1) m = atoi(argv[1]);
     if(argc > 2) n = atoi(argv[2]);
     if(argc > 3) k = atoi(argv[3]);
@@ -29,6 +29,8 @@ int main(int argc, char ** argv){
     // Initialize 
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
+    printMatrix(h_A, m, n);
+    printMatrix(h_B, n, k);
 
     // Allocate memory space on the device
     int *d_A, *d_B, *d_C;
@@ -61,6 +63,7 @@ int main(int argc, char ** argv){
 
     printf("gpu Matrix multiplication\t\telapsed %f sec. <<<grid %d block "
         "%d>>>\n", iElaps, grid.x, block.x);
+    printMatrix(h_odata, m, k);
 
     // Check result
     checkResult(h_C, h_odata, m * k);
@@ -92,5 +95,6 @@ int main(int argc, char ** argv){
     printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
+    printMatrix(h_odata, m, k);
     return 0;
 }
