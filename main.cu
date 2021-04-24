@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <cuda_runtime.h>
+#include "./include/config.cuh"
 #include "./include/til.cuh"
 #include "./include/matrixNaive.cuh"
 #include "./include/matrixTile.cuh"
