@@ -24,7 +24,7 @@ __global__ void gpuMatrixMulTileWPT(int* d_A, int* d_B, int* d_C, int m, int n, 
     int bBegin = TILE_SIZE * bx;
     int bStride = TILE_SIZE * k;
 
-    int accu[WPT];
+    volatile int accu[WPT];
     for(int i = 0; i < WPT; i++) accu[i] = 0;
 
     //计算C的一个Tile
