@@ -7,6 +7,7 @@
 #include "./include/matrixNaive.cuh"
 #include "./include/matrixTile.cuh"
 #include "./include/matrixTileWPT.cuh"
+#include "./include/matrixTranspose.cuh"
 //#include "./include/cublas.cuh"
 
 // Include local CUDA header files.
@@ -139,5 +140,10 @@ int main(int argc, char ** argv){
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
     //printMatrix(h_odata, m, k);
+
+
+    printMatrix(h_A);
+
+    matrixTranspose(h_B, h_A, m, n);
     return 0;
 }
