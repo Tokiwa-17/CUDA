@@ -5,6 +5,7 @@
 #include "./include/til.cuh"
 #include "./include/matrixNaive.cuh"
 #include "./include/matrixTile.cuh"
+#include "./include/matrixTileWPT.cuh"
 
 // Include local CUDA header files.
 
