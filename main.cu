@@ -16,7 +16,7 @@ int main(int argc, char ** argv){
 
     // input m, n, k
     //int m = 320, n = 320, k = 320;
-    int m = 4, n = 4, k = 4;
+    int m = 16, n = 16, k = 16;
     if(argc > 1) m = atoi(argv[1]);
     if(argc > 2) n = atoi(argv[2]);
     if(argc > 3) k = atoi(argv[3]);
