@@ -13,6 +13,7 @@ void cpuMatrixMul(int *h_A, int * h_B, int* h_C, int m, int n, int k){
         }
 }
 
+#ifdef _WIN32
 int gettimeofday(struct timeval* tp, void* tzp){
     time_t clock;
     struct tm tm;
@@ -30,6 +31,7 @@ int gettimeofday(struct timeval* tp, void* tzp){
     tp->tv_usec = wtm.wMilliseconds * 1000;
     return (0);
 }
+#endif
 
 double cpuSecond(){
     struct timeval tp;
