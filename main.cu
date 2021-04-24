@@ -29,8 +29,8 @@ int main(int argc, char ** argv){
     // Initialize 
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
-    printMatrix(h_A, m, n);
-    printMatrix(h_B, n, k);
+    //printMatrix(h_A, m, n);
+    //printMatrix(h_B, n, k);
 
     // Allocate memory space on the device
     int *d_A, *d_B, *d_C;
@@ -76,7 +76,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printMatrix(h_odata, m, k);
+    //printMatrix(h_odata, m, k);
 
     printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
@@ -84,17 +84,17 @@ int main(int argc, char ** argv){
 
     // GPU Matrix multiplication by tile, optimized by WPT
     block.x = TILE_SIZE / WPT, block.y = TILE_SIZE;
-    grid.x = k / TILE_SIZE / WPT, grid.y = m / TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
     iStart = cpuSecond();
     gpuMatrixMulTileWPT<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printMatrix(h_odata, m, k);
-
     printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
+
+    printMatrix(h_odata, m, k);
     return 0;
 }
