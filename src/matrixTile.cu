@@ -3,7 +3,8 @@
 #include "../include/matrixTile.cuh"
 #define TILE_SIZE 16
 
-/*__global__ void gpuMatrixMulTile(int* d_A, int* d_B, int* d_C, int m, int n, int k){
+//矩阵的大小设置成TILE_SIZE 的倍数
+__global__ void gpuMatrixMulTile(int* d_A, int* d_B, int* d_C, int m, int n, int k){
     
     __shared__ int A_tile[TILE_SIZE][TILE_SIZE];
     __shared__ int B_tile[TILE_SIZE][TILE_SIZE];
@@ -36,12 +37,10 @@
     int cIdx = k * TILE_SIZE * by + TILE_SIZE * bx;
     d_C[cIdx + k * ty + tx] = accu;
 }
-*/
 
-__global__ void gpuMatrixMulTile(int *A, int *B, int *C, int M, int K, int N) {
-	/* Basic tiling implementation of matrix multiplication.
-	 * Based on a more mathematically reasonable indexing method.
-	 */
+
+/*__global__ void gpuMatrixMulTile(int *A, int *B, int *C, int M, int K, int N) {
+
 	int bx = blockIdx.x, by = blockIdx.y;
 	int tx = threadIdx.x, ty = threadIdx.y;
 
@@ -72,3 +71,4 @@ __global__ void gpuMatrixMulTile(int *A, int *B, int *C, int M, int K, int N) {
 	int cIdx = N * TILE_SIZE * by + TILE_SIZE * bx;
 	C[cIdx + N * ty + tx] = Csub;
 }
+*/
