@@ -47,5 +47,4 @@ __global__ void gpuMatrixMulTileWPT(int* d_A, int* d_B, int* d_C, int m, int n, 
     int cIdx = k * TILE_SIZE * by + TILE_SIZE * bx;
     for(int l = 0; l < WPT; l++)
         d_C[cIdx + k * ty + tx + l] = accu[l];
-    }
 }
