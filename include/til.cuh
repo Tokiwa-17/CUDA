@@ -92,7 +92,7 @@ void initialDataInt(int* ip, int size){
 
 void printMatrix(int* C, const int nx, const int ny)
 {
-    float* ic = C;
+    int* ic = C;
     printf("Matrix<%d,%d>:", ny, nx);
     for (int i = 0;i < ny;i++)
     {
