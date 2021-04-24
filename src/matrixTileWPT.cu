@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
 #include "../include/matrixTileWPT.cuh"
-#define TILE_SIZE 16
-#define WPT 8
+
+
 
 //矩阵的大小设置成TILE_SIZE 的倍数
 __global__ void gpuMatrixMulTileWPT(int* d_A, int* d_B, int* d_C, int m, int n, int k){
