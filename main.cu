@@ -28,8 +28,6 @@ int main(int argc, char ** argv){
     // Initialize 
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
-    printMatrix(h_A, m, n);
-    printMatrix(h_B, n, k);
 
     // Allocate memory space on the device
     int *d_A, *d_B, *d_C;
@@ -46,7 +44,6 @@ int main(int argc, char ** argv){
     cpuMatrixMul(h_A, h_B, h_C, m, n, k);
     double iElaps = cpuSecond() - iStart;   
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
-    printMatrix(h_C, m, k);
 
     // GPU Matrix multiplication
     unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
@@ -80,6 +77,5 @@ int main(int argc, char ** argv){
     printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
-    printMatrix(h_C, m, k);
     return 0;
 }
