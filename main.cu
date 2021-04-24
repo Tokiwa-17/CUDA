@@ -110,6 +110,18 @@ int main(int argc, char ** argv){
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
 
+    // GPU Matrix multiplication by tile, optimized by WPT = 4
+    block.x = TILE_SIZE / 4, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulTileWPTop4<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+    printf("gpu Matrix multiplication3(WPT = 4)\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
     //printMatrix(h_odata, m, k);
     return 0;
 }
