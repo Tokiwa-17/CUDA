@@ -82,7 +82,7 @@ __global__ void gpuMatrixMulTileWPTop4(int* d_A, int* d_B, int* d_C, int m, int 
         A_tile[ty][4 * tx] = d_A[i + n * ty + tx * 4];
         A_tile[ty][4 * tx + 1] = d_A[i + n * ty + tx * 4 + 1];
         A_tile[ty][4 * tx + 2] = d_A[i + n * ty + tx * 4 + 2];
-        A_tile[ty][4 * tx + 3] = d_A[i + n * ty + tx * 4 + 3]
+        A_tile[ty][4 * tx + 3] = d_A[i + n * ty + tx * 4 + 3];
         B_tile[4 * tx][ty] = d_B[j + k * (4 * tx) + ty];
         B_tile[4 * tx + 1][ty] = d_B[j + k * (4 * tx + 1) + ty];
         B_tile[4 * tx + 2][ty] = d_B[j + k * (4 * tx + 2) + ty];
