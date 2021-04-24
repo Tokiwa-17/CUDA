@@ -6,6 +6,7 @@
 #	include <sys/time.h>
 #endif
 #ifdef _WIN32
+#endif
 #define CHECK(call){\
   const cudaError_t error=call;\
   if(error!=cudaSuccess){\
