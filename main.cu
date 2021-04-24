@@ -80,8 +80,8 @@ int main(int argc, char ** argv){
     checkResult(h_C, h_odata, m * k);
 
     // GPU Matrix multiplication by tile, optimized by WPT
-    block.x = 16 / WPT, block.y = 16;
-    grid.x = k / 16, grid.y = m / 16;
+    block.x = 16 , block.y = 16 / WPT;
+    grid.x = m, grid.y = n / WPT;
     iStart = cpuSecond();
     gpuMatrixMulTileWPT<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
