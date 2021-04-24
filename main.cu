@@ -95,6 +95,6 @@ int main(int argc, char ** argv){
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
 
-    printMatrix(h_odata, m, k);
+    //printMatrix(h_odata, m, k);
     return 0;
 }
