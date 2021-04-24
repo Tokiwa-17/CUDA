@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
 #include "../include/matrixNaive.cuh"
-
+#include "../include/til.cuh"
 /*
 *********************************************************************
 function name : gpuMatrixMul
