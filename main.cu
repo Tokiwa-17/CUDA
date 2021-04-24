@@ -7,7 +7,7 @@
 #include "./include/matrixNaive.cuh"
 #include "./include/matrixTile.cuh"
 #include "./include/matrixTileWPT.cuh"
-#include "./include/cublas.cuh"
+//#include "./include/cublas.cuh"
 
 // Include local CUDA header files.
 
@@ -69,7 +69,7 @@ int main(int argc, char ** argv){
     // Check result
     checkResult(h_C, h_odata, m * k);
 
-    cublas(d_A, d_B, d_C, m, n, k);
+    //cublas(d_A, d_B, d_C, m, n, k);
 
     // GPU Matrix multiplication by tile
     block.x = TILE_SIZE, block.y = TILE_SIZE;
