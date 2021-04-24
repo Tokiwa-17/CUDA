@@ -30,8 +30,8 @@ int main(int argc, char ** argv){
     // Initialize 
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
-    printMatrix(h_A);
-    printMatrix(h_B);
+    printMatrix(h_A, m, n);
+    printMatrix(h_B, n, k);
 
     // Allocate memory space on the device
     int *d_A, *d_B, *d_C;
@@ -77,7 +77,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printMatrix(h_odata);
+    printMatrix(h_odata, m, k);
 
     printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
@@ -92,7 +92,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    print(h_odata);
+    print(h_odata, m, k);
 
     printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
