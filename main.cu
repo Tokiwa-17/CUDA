@@ -132,7 +132,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printf("gpu Matrix multiplication3(WPT = 4)\t\telapsed %f sec. <<<grid %d block "
+    printf("gpu Matrix multiplication3(WPT = 8)\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
     //printMatrix(h_odata, m, k);
