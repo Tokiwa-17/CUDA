@@ -29,8 +29,6 @@ int main(int argc, char ** argv){
     // Initialize 
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
-    printMatrix(h_A, m, n);
-    printMatrix(h_B, n, k);
 
     // Allocate memory space on the device
     int *d_A, *d_B, *d_C;
@@ -63,7 +61,6 @@ int main(int argc, char ** argv){
 
     printf("gpu Matrix multiplication\t\telapsed %f sec. <<<grid %d block "
         "%d>>>\n", iElaps, grid.x, block.x);
-    printMatrix(h_odata, m, k);
 
     // Check result
     checkResult(h_C, h_odata, m * k);
@@ -95,6 +92,5 @@ int main(int argc, char ** argv){
     printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
-    printMatrix(h_odata, m, k);
     return 0;
 }
