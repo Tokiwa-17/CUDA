@@ -5,7 +5,7 @@
 
 
 //矩阵的大小设置成TILE_SIZE 的倍数
-__global__ void gpuMatrixMulTile(int* d_A, int* d_B, int* d_C, int m, int n, int k){
+/*__global__ void gpuMatrixMulTile(int* d_A, int* d_B, int* d_C, int m, int n, int k){
     
     __shared__ int A_tile[TILE_SIZE][TILE_SIZE];
     __shared__ int B_tile[TILE_SIZE][TILE_SIZE];
@@ -42,4 +42,38 @@ __global__ void gpuMatrixMulTile(int* d_A, int* d_B, int* d_C, int m, int n, int
     //A中横着的一行和B中竖着的一列累加完毕放到C中对应位置
     int cIdx = k * TILE_SIZE * by + TILE_SIZE * bx;
     d_C[cIdx + k * ty + tx] = accu;
+}
+*/
+
+
+__global__ void gpuMatrixMulTile(int* A, int* B, int* C, int m, int k, int n){
+
+    // Thread identifiers
+    int row = threadIdx.x, col = threadIdx.y;
+    int globalRow = TILE_SIZE * blockIdx.x + row;
+    int globalCol = TILE_SIZE * blockIdx.y + col;
+
+    // local memory to fit a tile
+    __shared__ int ATile[TILE_SIZE][TILE_SIZE];
+    __shared__ int BTile[TILE_SIZE][TILE_SIZE];
+    
+    int acc = 0;
+
+    int numTiles = k / TILE_SIZE;
+    for(int t = 0; t < numTiles; t++){
+        //t指A是横着的第几个tile或B是竖着的第几个tile
+        //load one tile of A and B into share memory
+        int tileRow = TILE_SIZE * t + row;
+        int tileCol = TILE_SIZE * t + col;
+        ATile[col][row] = A[tileCol * m + globalRow];
+        BTile[col][row] = B[globalCol * k + tileRow];
+
+        __syncthreads();
+
+        for(int w = 0; w < TILE_SIZE; w++)
+            acc += ATile[k][row] * BTile[col][k];
+
+        __syncthreads();
+    }
+    C[globalRow + globalCol * m] = acc;
 }
