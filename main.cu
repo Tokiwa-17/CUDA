@@ -15,7 +15,8 @@ int main(int argc, char ** argv){
     initDevice(dev);
 
     // input m, n, k
-    int m = 320, n = 320, k = 320;
+    //int m = 320, n = 320, k = 320;
+    int m = 4, n = 4, k = 4;
     if(argc > 1) m = atoi(argv[1]);
     if(argc > 2) n = atoi(argv[2]);
     if(argc > 3) k = atoi(argv[3]);
@@ -29,6 +30,8 @@ int main(int argc, char ** argv){
     // Initialize 
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
+    printMatrix(h_A);
+    printMatrix(h_B);
 
     // Allocate memory space on the device
     int *d_A, *d_B, *d_C;
@@ -74,6 +77,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+    printMatrix(h_odata);
 
     printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
@@ -88,6 +92,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+    print(h_odata);
 
     printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
