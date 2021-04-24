@@ -1,8 +1,6 @@
 #pragma once
 #include <stdio.h>
 #include <cuda_runtime.h>
-#define BDIMY 32
-#define BDIMX 16
 
 /*
 *********************************************************************
