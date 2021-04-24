@@ -107,3 +107,74 @@ __global__ void gpuMatrixMulTileWPTop4(int* d_A, int* d_B, int* d_C, int m, int 
     d_C[cIdx + k * ty + 4 * tx + 2] = accu[2];
     d_C[cIdx + k * ty + 4 * tx + 3] = accu[3];
 }
+
+//矩阵的大小设置成TILE_SIZE 的倍数
+__global__ void gpuMatrixMulTileWPTop8(int* d_A, int* d_B, int* d_C, int m, int n, int k){
+    
+    __shared__ int A_tile[TILE_SIZE][TILE_SIZE];
+    __shared__ int B_tile[TILE_SIZE][TILE_SIZE];
+
+    int bx = blockIdx.x, by = blockIdx.y;
+    int tx = threadIdx.x, ty = threadIdx.y;
+
+    //illustrate :https://cnugteren.github.io/tutorial/pages/page4.html
+    // A是横着的条, aBegin和aEnd分别是Tile第一行的开始和结束, 每循环一次横着移动一个Tile
+    int aBegin = blockIdx.y * TILE_SIZE * n;
+    int aEnd = aBegin + n - 1;
+    int aStride = TILE_SIZE;
+
+    // B是竖着的条, bBegin指向Tile第一列的开始，每循环一次竖着移动一个Tile
+    int bBegin = TILE_SIZE * bx;
+    int bStride = TILE_SIZE * k;
+
+    volatile int accu[8];
+    for(int i = 0; i < 8; i++) accu[i] = 0;
+
+    //计算C的一个Tile
+    for(int i = aBegin, j = bBegin; i <= aEnd; i += aStride, j += bStride){
+        //load share memory
+        //从全局地址取出一个点放到共享内存中
+        A_tile[ty][8 * tx] = d_A[i + n * ty + tx * 8];
+        A_tile[ty][8 * tx + 1] = d_A[i + n * ty + tx * 8 + 1];
+        A_tile[ty][8 * tx + 2] = d_A[i + n * ty + tx * 8 + 2];
+        A_tile[ty][8 * tx + 3] = d_A[i + n * ty + tx * 8 + 3];
+        A_tile[ty][8 * tx + 4] = d_A[i + n * ty + tx * 8 + 4];
+        A_tile[ty][8 * tx + 5] = d_A[i + n * ty + tx * 8 + 5];
+        A_tile[ty][8 * tx + 6] = d_A[i + n * ty + tx * 8 + 6];
+        A_tile[ty][8 * tx + 7] = d_A[i + n * ty + tx * 8 + 7];
+        B_tile[8 * tx][ty] = d_B[j + k * (8 * tx) + ty];
+        B_tile[8 * tx + 1][ty] = d_B[j + k * (8 * tx + 1) + ty];
+        B_tile[8 * tx + 2][ty] = d_B[j + k * (8 * tx + 2) + ty];
+        B_tile[8 * tx + 3][ty] = d_B[j + k * (8 * tx + 3) + ty];
+        B_tile[8 * tx + 4][ty] = d_B[j + k * (8 * tx + 4) + ty];
+        B_tile[8 * tx + 5][ty] = d_B[j + k * (8 * tx + 5) + ty];
+        B_tile[8 * tx + 6][ty] = d_B[j + k * (8 * tx + 6) + ty];
+        B_tile[8 * tx + 7][ty] = d_B[j + k * (8 * tx + 7) + ty];
+
+        __syncthreads();
+
+            for(int t = 0;t < TILE_SIZE; t++){
+                accu[0] += A_tile[ty][t] * B_tile[t][8 * tx];
+                accu[1] += A_tile[ty][t] * B_tile[t][8 * tx + 1];
+                accu[2] += A_tile[ty][t] * B_tile[t][8 * tx + 2];
+                accu[3] += A_tile[ty][t] * B_tile[t][8 * tx + 3];
+                accu[4] += A_tile[ty][t] * B_tile[t][8 * tx + 4];
+                accu[5] += A_tile[ty][t] * B_tile[t][8 * tx + 5];
+                accu[6] += A_tile[ty][t] * B_tile[t][8 * tx + 6];
+                accu[7] += A_tile[ty][t] * B_tile[t][8 * tx + 7];
+            }
+        
+        __syncthreads();
+    }
+    //A中横着的一行和B中竖着的一列累加完毕放到C中对应位置
+    int cIdx = k * TILE_SIZE * by + TILE_SIZE * bx;
+
+    d_C[cIdx + k * ty + 8 * tx] = accu[0];
+    d_C[cIdx + k * ty + 8 * tx + 1] = accu[1];
+    d_C[cIdx + k * ty + 8 * tx + 2] = accu[2];
+    d_C[cIdx + k * ty + 8 * tx + 3] = accu[3];
+    d_C[cIdx + k * ty + 8 * tx + 4] = accu[4];
+    d_C[cIdx + k * ty + 8 * tx + 5] = accu[5];
+    d_C[cIdx + k * ty + 8 * tx + 6] = accu[6];
+    d_C[cIdx + k * ty + 8 * tx + 7] = accu[7];
+}
