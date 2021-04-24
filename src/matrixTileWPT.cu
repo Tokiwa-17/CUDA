@@ -32,8 +32,7 @@ __global__ void gpuMatrixMulTileWPT(int* d_A, int* d_B, int* d_C, int m, int n, 
         //load share memory
         //从全局地址取出一个点放到共享内存中
         A_tile[ty][tx] = d_A[i + n * ty + tx];
-        for(int l = 0; l < WPT; l++)
-            B_tile[tx][ty * WPT] = d_B[j + k * tx + ty + l];
+        B_tile[tx][ty] = d_B[j + k * tx + ty];
 
         __syncthreads();
 
