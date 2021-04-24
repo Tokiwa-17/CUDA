@@ -142,10 +142,11 @@ int main(int argc, char ** argv){
     //printMatrix(h_odata, m, k);
 
 
-    printMatrix(h_A);
-    block.x = BDIMX, blockIdx.y = BDIMY;
+    printMatrix(h_A, n, m);
+    block.x = BDIMX, block.y = BDIMY;
     grid.x = (m + block.x - 1) / BDIMX;
     grid.y = (n + block.y - 1) / BDIMY;
-    matrixTranspose(h_B, h_A, m, n);
+    matrixTranspose<<<grid, block>>>(h_B, h_A, m, n);
+    printMatrix(h_B, n, m);
     return 0;
 }
