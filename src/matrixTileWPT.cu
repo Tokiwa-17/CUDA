@@ -31,20 +31,23 @@ __global__ void gpuMatrixMulTileWPT(int* d_A, int* d_B, int* d_C, int m, int n, 
     for(int i = aBegin, j = bBegin; i <= aEnd; i += aStride, j += bStride){
         //load share memory
         //从全局地址取出一个点放到共享内存中
-        A_tile[ty][tx] = d_A[i + n * ty + tx];
-        B_tile[tx][ty] = d_B[j + k * tx + ty];
+        A_tile[ty][2 * tx] = d_A[i + n * ty + tx * 2];
+        A_tile[ty][2 * tx + 1] = d_A[i + n * ty + tx * 2 + 1];
+        B_tile[2 * tx][ty] = d_B[j + k * (2 * tx) + ty];
+        B_tile[2 * tx + 1][ty] = d_B[j + k * (2 * tx + 1) + ty];
 
         __syncthreads();
 
-        for(int l = 0; l < WPT; l++){
-            for(int t = 0;t < TILE_SIZE; t++)
-                accu[l] += A_tile[ty][t] * B_tile[t][tx + l];
-        }
+            for(int t = 0;t < TILE_SIZE; t++){
+                accu[0] += A_tile[ty][t] * B_tile[t][2 * tx];
+                accu[1] += A_tile[ty][t] * B_tile[t][2 * tx + 1];
+            }
         
         __syncthreads();
     }
     //A中横着的一行和B中竖着的一列累加完毕放到C中对应位置
     int cIdx = k * TILE_SIZE * by + TILE_SIZE * bx;
-    for(int l = 0; l < WPT; l++)
-        d_C[cIdx + k * ty + tx + l] = accu[l];
+
+    d_C[cIdx + k * ty + 2 * tx] = accu[0];
+    d_C[cIdx + k * ty + 2 * tx + 1] = accu[1];
 }
