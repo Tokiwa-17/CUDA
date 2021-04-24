@@ -6,7 +6,7 @@
 __global__ void matrixNaiveTrans(int *out, int *in, const int nx, const int ny){
     // coordinate(ix, iy)
     unsigned int ix = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int iy = blockIdy.y * blockDim.y + threadIdx.y;
+    unsigned int iy = blockIdx.y * blockDim.y + threadIdx.y;
 
     if(ix < nx && iy < ny)
         out[ix * ny + iy] = in[iy * nx + ix];
@@ -36,7 +36,5 @@ __global__ void matrixTranspose(int *out, int *in, int nx, int ny){
         __syncthreads();
         out[out_idx] = tile[icol][irow];
     }
-
-    ix = blockIdx.y * 
 
 }
