@@ -9,6 +9,7 @@
 #include "./include/matrixTileWPT.cuh"
 #include "./include/matrixTranspose.cuh"
 #include "./include/matrixComOpt.cuh"
+#include "./include/cpuMatrixStrassen.cuh"
 //#include "./include/cublas.cuh"
 
 // Include local CUDA header files.
@@ -49,6 +50,14 @@ int main(int argc, char ** argv){
     cpuMatrixMul(h_A, h_B, h_C, m, n, k);
     double iElaps = cpuSecond() - iStart;   
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
+
+    // CPU Matrix multiplication by Strassen
+    /*cpuMatrixStrassen Strassen(h_A, h_B, m);
+    double iStart = cpuSecond();
+    ;
+    cpuMatrixMul(h_A, h_B, h_C, m, n, k);
+    double iElaps = cpuSecond() - iStart;   
+    printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);*/
 
     // GPU Matrix multiplication
     unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
