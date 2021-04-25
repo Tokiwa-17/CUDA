@@ -13,7 +13,7 @@ __global__ void gpuMatrixComOpt(int *A, int *B, int *C, int m, int n, int k){
     int bx = blockIdx.x, by = blockIdx.y;
     int tx = threadIdx.x, ty = threadIdx.y;
 
-    __shared__ int ATile[TILE_SIZE][TILE_SIZE];
+    __shared__ int ATile[TILE_SIZE * TILE_SIZE];
     int cCol[TILE_SIZE];
     for(int i = 0; i < TILE_SIZE; i++) cCol[i] = 0;
 
