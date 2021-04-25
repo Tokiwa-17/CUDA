@@ -139,13 +139,13 @@ int main(int argc, char ** argv){
     printf("gpu Matrix multiplication3(WPT = 8)\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
-    //printMatrix(h_odata, m, k);
-
 
     printMatrix(h_A, n, m);
     block.x = BDIMX, block.y = BDIMY;
     grid.x = (m + block.x - 1) / BDIMX;
     grid.y = (n + block.y - 1) / BDIMY;
+    matrixNaiveTrans<<<grid, block>>>(h_B, h_A, m, n);
+    printMatrix(h_B, n, m);
     matrixTranspose<<<grid, block>>>(h_B, h_A, m, n);
     printMatrix(h_B, n, m);
     return 0;
