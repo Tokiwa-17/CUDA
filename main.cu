@@ -33,7 +33,7 @@ int main(int argc, char ** argv){
     initialDataInt(h_A, m * n);
     //initialDataInt(h_B, n * k);
 
-    printMatrix(h_A, n, m);
+    printMatrix(h_A, m, n);
     dim3 block, grid;
     block.x = BDIMX, block.y = BDIMY;
     grid.x = (m + block.x - 1) / BDIMX;
