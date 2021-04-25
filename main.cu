@@ -138,6 +138,7 @@ int main(int argc, char ** argv){
     printf("gpu Matrix multiplication3(WPT = 8)\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
+    printMatrix(h_odata, m, k);
 
     // GPU Matrix multiplication by tile, optimized by Computational optimization
     block.x = TILE_SIZE, block.y = VEC_SIZE;
@@ -151,5 +152,6 @@ int main(int argc, char ** argv){
     printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
+    printMatrix(h_odata, m, k);
     return 0;
 }
