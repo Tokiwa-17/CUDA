@@ -13,7 +13,7 @@ __global__ void matrixNaiveTrans(int *out, int *in, const int nx, const int ny){
 }
 
 __global__ void matrixTranspose(int *out, int *in, int nx, int ny){
-    __shared__ float tile[BDIMY][BDIMX];
+    __shared__ int tile[BDIMY][BDIMX];
     unsigned int ix, iy, ti, to;
     //计算线程的全局坐标
     ix = blockIdx.x * blockDim.x + threadIdx.x;
