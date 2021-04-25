@@ -8,13 +8,13 @@
 
 
 //每个线程计算C的竖着的一条向量，所以我们需要加载一个B值和一列长度为VEC_SIZE的向量C到寄存器中
-/*__global__ void gpuMatrixComOpt(int *A, int *B, int *C, int m, int n, int k){
+__global__ void gpuMatrixComOpt(int *A, int *B, int *C, int m, int n, int k){
     
     int bx = blockIdx.x, by = blockIdx.y;
     int tx = threadIdx.x, ty = threadIdx.y;
 
     __shared__ int ATile[TILE_SIZE * TILE_SIZE];
-    int cCol[TILE_SIZE];
+    volatile int cCol[TILE_SIZE];
     for(int i = 0; i < TILE_SIZE; i++) cCol[i] = 0;
 
     int aBegin = n * TILE_SIZE * by;
@@ -61,63 +61,4 @@
         C[cPos] = cCol[i];
         cPos += k;
     }
-}
-*/
-
-__global__ void gpuMatrixComOpt(int *A, int *B, int *C, int M, int K, int N) {
-	/* Computation method optimization.
-	 * Peform outer product instead of inner product to reduce  
-	 * instructions from shared memory from two to one.
-	 */
-	int bx = blockIdx.x, by = blockIdx.y;
-	int tx = threadIdx.x, ty = threadIdx.y;
-
-	// Explicitly allocate As as column-major array 
-	// to store TILE*TILE submatrix of A.
-	__shared__ int As[TILE_SIZE * TILE_SIZE];
-
-	// Allocate register files for sub-result of C at each thread.
-	int cv[TILE_SIZE] = {0};
-
-	// Basic iterations is similar with Tiling. But notice that 
-	// the total number of threads is less than that of Tiling.
-	int aBegin = K * TILE_SIZE * by;
-	int aEnd = aBegin + K - 1;
-	int aStep = TILE_SIZE;
-
-	int bBegin = TILE_SIZE * VEC_SIZE * bx;
-	int bStep = TILE_SIZE * N;
-
-	for (int a = aBegin, b = bBegin; a <= aEnd; a += aStep, b += bStep) {
-		// Load Asub with size of TILE*TILE in colomn-major style.
-		// Each thread needs to load TILE_SIZE / VEC_SIZE values of A.
-		int t = VEC_SIZE;
-		for (int i = 0; i < TILE_SIZE / VEC_SIZE; ++i) {
-			As[ (i*t+ty) + TILE_SIZE * tx] = A[a + K*(i*t+ty) + tx];
-		}
-		__syncthreads();
-
-		int *ap = As;	// Point to the first address of As, increase later.
-		// TODO: global memory ? register ? not clear :(
-		int *bp = &B[b + TILE_SIZE * ty + tx];	
-
-		for (int i = 0; i < TILE_SIZE; ++i) {
-			int bv = *bp;	
-		// Each thread calculate a vector of C with size of TILE_SIZE.
-			for (int j = 0; j < TILE_SIZE; ++j) {
-				cv[j] += ap[j] * bv;
-			}
-			ap += TILE_SIZE;
-			bp += N;
-		}
-		__syncthreads();
-	}
-	
-	// Store each value of Csub back to C in global memory.
-	int c = N * TILE_SIZE * by + TILE_SIZE * VEC_SIZE * bx;
-	c += TILE_SIZE * ty + tx;
-	for (int i = 0; i < TILE_SIZE; ++i) {
-		C[c] = cv[i];
-		c += N;
-	}
 }
