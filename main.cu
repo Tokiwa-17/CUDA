@@ -56,9 +56,9 @@ int main(int argc, char ** argv){
     iStart = cpuSecond();
     Matrix c = strassen(a, b);
     iElaps = cpuSecond() - iStart;  
-    c.checkResult(h_C); 
     c.printMatrix();
     printf("cpu Matrix multiplication by Strassen\telapsed %f sec.\n", iElaps);
+    c.checkResult(h_C); 
 
     // GPU Matrix multiplication
     unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
