@@ -11,11 +11,13 @@ public:
 
 	Matrix(int n);
 
-    Matrix(int *Ptr, int n);
+	Matrix(int* Ptr, int n);
 
 	Matrix(const Matrix& a);
 
 	~Matrix();
+
+	void setZero();
 
 	Matrix operator = (const Matrix& a);
 
@@ -25,13 +27,11 @@ public:
 
 	Matrix operator * (const Matrix& a);
 
-    void checkResult(int *ptr);
+	void printMatrix();
+
+	void checkResult(int* ptr);
 };
 
-class cpuMatrixStrassen{
-public:
-    Matrix *a, *b;
-    cpuMatrixStrassen(int *ptrA, int *ptrB, int n);
-    void fill(Matrix& a, Matrix& b, int opt);
-    Matrix strassen(Matrix& a, Matrix &b);
-};
+Matrix strassen(Matrix& a, Matrix& b);
+
+void cpuMatrixStrassen::fill(Matrix& a, Matrix& b, int opt)
