@@ -34,4 +34,4 @@ public:
 
 Matrix strassen(Matrix& a, Matrix& b);
 
-void cpuMatrixStrassen::fill(Matrix& a, Matrix& b, int opt)
+void cpuMatrixStrassen::fill(Matrix& a, Matrix& b, int opt);
