@@ -29,12 +29,12 @@ __global__ void matrixTranspose(int *out, int *in, int nx, int ny){
     // 计算转置后的全局坐标
     ix = blockIdx.y * blockDim.y + icol;
     iy = blockIdx.x * blockDim.x + irow;
-    out_idx = iy * ny + ix;
+    to = iy * ny + ix;
 
     if(ix < nx && iy < ny){
-        tile[threadIdx.y][threadIdx.x] = in[out_idx];
+        tile[threadIdx.y][threadIdx.x] = in[ti];
         __syncthreads();
-        out[out_idx] = tile[icol][irow];
+        out[to] = tile[icol][irow];
     }
 
 }
