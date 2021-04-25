@@ -25,10 +25,13 @@ public:
 
 	Matrix operator * (const Matrix& a);
 
+    void checkResult(int *ptr);
 };
 
 class cpuMatrixStrassen{
 public:
+    Matrix *a, *b;
+    cpuMatrixStrassen(int *ptrA, int *ptrB, int n);
     void fill(Matrix& a, Matrix& b, int opt);
     Matrix strassen(Matrix& a, Matrix &b);
 }
