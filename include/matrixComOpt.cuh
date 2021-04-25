@@ -10,3 +10,7 @@
 //   Bsub: TILE_SIZE * (TILE_SIZE*VECTOR_SIZE)
 
 __global__ void gpuMatrixComOpt(int *A, int *B, int *C, int m, int n, int k);
+
+__global__ void gpuMatrixComOpt8(int *A, int *B, int *C, int m, int n, int k);
+
+__global__ void gpuMatrixComOpt16(int *A, int *B, int *C, int m, int n, int k);
