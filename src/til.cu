@@ -56,12 +56,13 @@ void initialDataInt(int* ip, int size){
     }
 }
 
-void printMatrix(int* C, const int nx, const int ny){
+void printMatrix(int* C, const int nx, const int ny) {
     int* ic = C;
     printf("Matrix<%d,%d>:\n", ny, nx);
-    for (int i = 0;i < ny;i++){
-        for (int j = 0;j < nx;j++){
-            printf("%6d ", C[j]);
+    for (int i = 0;i < ny;i++) {
+
+        for (int j = 0;j < nx;j++) {
+            printf("%6d ", ic[j]);
         }
         ic += nx;
         printf("\n");
