@@ -31,7 +31,7 @@ int main(int argc, char ** argv){
 
     // Initialize 
     initialDataInt(h_A, m * n);
-    //initialDataInt(h_B, n * k);
+    initialDataInt(h_B, n * k);
 
     printMatrix(h_A, m, n);
     printMatrix(h_B, m, n);
