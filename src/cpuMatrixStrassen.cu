@@ -99,7 +99,7 @@ void Matrix::checkResult(int* ptr) {
         for(int j = 0; j < m_n; j++){
             if (abs(iptr[j] - imal[j]) > epsilon) {
                 printf("Results do not match!\n");
-                printf("%d(hostRef[%d] )!= %d(gpuRef[%d])\n", ptr[i], i, matrix[i], i);
+                printf("%d(hostRef[%d] )!= %d(gpuRef[%d])\n", ptr[i], i, imal[i], i);
                 return;
             }
         }
