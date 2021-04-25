@@ -42,23 +42,6 @@ Matrix Matrix::operator = (const Matrix& a) {
 	return b;
 }
 
-ostream& operator << (ostream& out, Matrix& a) {
-	for (int i = 0;i < a.m_n;i++) {
-		for (int j = 0;j < a.m_n;j++)
-			out << a.matrix[i][j] << ' ';
-		out << endl;
-	}
-	return out;
-}
-
-istream& operator >> (istream& in, Matrix& a) {
-	
-	for (int i = 0;i < a.m_n;i++)
-		for (int j = 0;j < a.m_n;j++)
-			in >> a.matrix[i][j];
-	return in;
-}
-
 Matrix Matrix::operator + (const Matrix& a) {
 	Matrix res(m_n);
 	for (int i = 0;i < m_n;i++)
@@ -82,6 +65,23 @@ Matrix Matrix::operator * (const Matrix& a) {
 			for (int k = 0;k < m_n;k++)
 				b.matrix[i][j] += matrix[i][k] * a.matrix[k][j];
 	return b;
+}
+
+bool Matrix::checkResult(int* ptr){
+    double epsilon = 1.0E-8;
+    for (int i = 0;i < m_n * m_n; i++){
+        if (abs(ptr[i] - matrix[i]) > epsilon){
+            printf("Results do not match!\n");
+            printf("%d(hostRef[%d] )!= %d(gpuRef[%d])\n", ptr[i], i, matrix[i], i);
+            return;
+        }
+    }
+    printf("Check result success!\n");
+}
+
+cpuMatrixStrassen::cpuMatrixStrassen(int *ptrA, int *ptrB, int n){
+    a = new Matrix(ptrA, n);
+    b = new Matrix(ptrB, n);
 }
 
 void cpuMatrixStrassen::fill(Matrix& a, Matrix& b, int opt){
