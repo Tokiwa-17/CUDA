@@ -1,5 +1,4 @@
 #include "../include/cpuMatrixStrassen.cuh"
-#pragma unroll
 
 Matrix::Matrix(int n) : m_n(n){
     matrix = new int *[m_n];
@@ -59,7 +58,6 @@ Matrix Matrix::operator - (const Matrix& a) {
 
 Matrix Matrix::operator * (const Matrix& a) {
 	Matrix b(m_n);
-	b.setZero();
 	for (int i = 0;i < m_n;i++)
 		for (int j = 0;j < m_n;j++)
 			for (int k = 0;k < m_n;k++)
@@ -67,7 +65,7 @@ Matrix Matrix::operator * (const Matrix& a) {
 	return b;
 }
 
-bool Matrix::checkResult(int* ptr){
+void Matrix::checkResult(int* ptr){
     double epsilon = 1.0E-8;
     for (int i = 0;i < m_n * m_n; i++){
         if (abs(ptr[i] - matrix[i]) > epsilon){
@@ -119,10 +117,10 @@ Matrix cpuMatrixStrassen::strassen(Matrix& a, Matrix& b){
     fill(a11, a, 1), fill(a12, a, 2), fill(a21, a, 3), fill(a22, a, 4);
 	fill(b11, b, 1), fill(b12, b, 2), fill(b21, b, 3), fill(b22, b, 4);
 
-    r = divide(a11, b11) + divide(a12, b21);
-	s = divide(a11, b12) + divide(a12, b22);
-	t = divide(a21, b11) + divide(a22, b21);
-	u = divide(a21, b12) + divide(a22, b22);
+    r = strassen(a11, b11) + strassen(a12, b21);
+	s = strassen(a11, b12) + strassen(a12, b22);
+	t = strassen(a21, b11) + strassen(a22, b21);
+	u = strassen(a21, b12) + strassen(a22, b22);
 
     for (int i = 0;i < n;i++)
 		for (int j = 0;j < n;j++) {
