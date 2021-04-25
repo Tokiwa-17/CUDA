@@ -140,43 +140,34 @@ int main(int argc, char ** argv){
     checkResult(h_C, h_odata, m * k);
 
     // GPU Matrix multiplication by tile, optimized by Computational optimization4
-    block.x = TILE_SIZE, block.y = VEC_SIZE;
-    grid.x = k / (TILE_SIZE * VEC_SIZE), grid.y = m / TILE_SIZE;
-    //grid.x = (k + TILE_SIZE - 1) / TILE_SIZE, grid.y = (m + TILE_SIZE * VEC_SIZE - 1) / (TILE_SIZE * VEC_SIZE);
-    iStart = cpuSecond();
-    gpuMatrixComOpt<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
-    CHECK(cudaDeviceSynchronize());
-    CHECK(cudaGetLastError());
-    iElaps = cpuSecond() - iStart;
-    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
-    "%d>>>\n", iElaps, grid.x, block.x);
-    checkResult(h_C, h_odata, m * k);
+    if(m > 32){
+        block.x = TILE_SIZE, block.y = VEC_SIZE;
+        grid.x = k / (TILE_SIZE * VEC_SIZE), grid.y = m / TILE_SIZE;
+        //grid.x = (k + TILE_SIZE - 1) / TILE_SIZE, grid.y = (m + TILE_SIZE * VEC_SIZE - 1) / (TILE_SIZE * VEC_SIZE);
+        iStart = cpuSecond();
+        gpuMatrixComOpt<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
+        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+        printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
+        "%d>>>\n", iElaps, grid.x, block.x);
+        checkResult(h_C, h_odata, m * k);
+    }
 
     // GPU Matrix multiplication by tile, optimized by Computational optimization8
-    block.x = TILE_SIZE, block.y = 8;
-    grid.x = k / (TILE_SIZE * 8), grid.y = m / TILE_SIZE;
-    iStart = cpuSecond();
-    gpuMatrixComOpt8<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
-    CHECK(cudaDeviceSynchronize());
-    CHECK(cudaGetLastError());
-    iElaps = cpuSecond() - iStart;
-    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
-    "%d>>>\n", iElaps, grid.x, block.x);
-    checkResult(h_C, h_odata, m * k);
-
-    // GPU Matrix multiplication by tile, optimized by Computational optimization16
-    block.x = TILE_SIZE, block.y = VEC_SIZE;
-    grid.x = k / (TILE_SIZE * 16), grid.y = m / TILE_SIZE;
-    iStart = cpuSecond();
-    gpuMatrixComOpt16<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
-    CHECK(cudaDeviceSynchronize());
-    CHECK(cudaGetLastError());
-    iElaps = cpuSecond() - iStart;
-    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
-    "%d>>>\n", iElaps, grid.x, block.x);
-    checkResult(h_C, h_odata, m * k);
+    if(m > 64){
+        block.x = TILE_SIZE, block.y = 8;
+        grid.x = k / (TILE_SIZE * 8), grid.y = m / TILE_SIZE;
+        iStart = cpuSecond();
+        gpuMatrixComOpt8<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
+        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+        printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
+        "%d>>>\n", iElaps, grid.x, block.x);
+        checkResult(h_C, h_odata, m * k);
+    }
     return 0;
 }
