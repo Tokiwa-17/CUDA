@@ -31,26 +31,8 @@ int main(int argc, char ** argv){
 
     // Initialize 
     initialDataInt(h_A, m * n);
-    //initialDataInt(h_B, n * k);
+    initialDataInt(h_B, n * k);
 
-    printMatrix(h_A, m, n);
-    int *d_A, *d_B, *d_C;
-    cudaMalloc((void**)&d_A, sizeof(int) * (m * n));
-    cudaMalloc((void**)&d_B, sizeof(int) * (n * k));
-    cudaMemcpy(d_A, h_A, sizeof(int) * (m * n), cudaMemcpyHostToDevice);
-    dim3 block, grid;
-    block.x = BDIMX, block.y = BDIMY;
-    grid.x = (m + block.x - 1) / block.x;
-    grid.y = (n + block.y - 1) / block.y;
-    matrixNaiveTrans<<<grid, block>>>(d_B, d_A, m, n);
-    cudaMemcpy(h_B, d_B, sizeof(int) * (m * n), cudaMemcpyDeviceToHost);
-    printMatrix(h_B, m, n);
-    matrixTranspose<<<grid, block>>>(d_B, d_A, m, n);
-    cudaMemcpy(h_B, d_B, sizeof(int) * (m * n), cudaMemcpyDeviceToHost);
-    printMatrix(h_B, m, n);
-    //printMatrix(h_A, m, n);
-    //printMatrix(h_B, n, k);
-/*
     // Allocate memory space on the device
     int *d_A, *d_B, *d_C;
     cudaMalloc((void**)&d_A, sizeof(int) * (m * n));
@@ -155,7 +137,6 @@ int main(int argc, char ** argv){
     printf("gpu Matrix multiplication3(WPT = 8)\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
-*/
 
     return 0;
 }
