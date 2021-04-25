@@ -34,6 +34,7 @@ int main(int argc, char ** argv){
     //initialDataInt(h_B, n * k);
 
     printMatrix(h_A, n, m);
+    dim3 block, grid;
     block.x = BDIMX, block.y = BDIMY;
     grid.x = (m + block.x - 1) / BDIMX;
     grid.y = (n + block.y - 1) / BDIMY;
