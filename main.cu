@@ -50,13 +50,14 @@ int main(int argc, char ** argv){
     cpuMatrixMul(h_A, h_B, h_C, m, n, k);
     double iElaps = cpuSecond() - iStart;   
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
-
+    printMatrix(h_C);
     // CPU Matrix multiplication by Strassen
     Matrix a(h_A, n), b(h_B, n);
     iStart = cpuSecond();
     Matrix c = strassen(a, b);
     iElaps = cpuSecond() - iStart;  
     c.checkResult(h_C); 
+    c.printMatrix();
     printf("cpu Matrix multiplication by Strassen\telapsed %f sec.\n", iElaps);
 
     // GPU Matrix multiplication
