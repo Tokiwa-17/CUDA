@@ -31,17 +31,22 @@ int main(int argc, char ** argv){
 
     // Initialize 
     initialDataInt(h_A, m * n);
-    initialDataInt(h_B, n * k);
+    //initialDataInt(h_B, n * k);
 
     printMatrix(h_A, m, n);
-    printMatrix(h_B, m, n);
+    int *d_A, *d_B, *d_C;
+    cudaMalloc((void**)&d_A, sizeof(int) * (m * n));
+    cudaMalloc((void**)&d_B, sizeof(int) * (n * k));
+    cudaMemcpy(d_A, h_A, sizeof(int) * (m * n), cudaMemcpyHostToDevice);
     dim3 block, grid;
     block.x = BDIMX, block.y = BDIMY;
-    grid.x = (m + block.x - 1) / BDIMX;
-    grid.y = (n + block.y - 1) / BDIMY;
-    matrixNaiveTrans<<<grid, block>>>(h_B, h_A, m, n);
+    grid.x = (m + block.x - 1) / block.x;
+    grid.y = (n + block.y - 1) / block.y;
+    matrixNaiveTrans<<<grid, block>>>(d_B, d_A, m, n);
+    cudaMemcpy(h_B, d_B, sizeof(int) * (m * n), cudaMemcpyDeviceToHost);
     printMatrix(h_B, m, n);
-    matrixTranspose<<<grid, block>>>(h_B, h_A, m, n);
+    matrixTranspose<<<grid, block>>>(d_B, d_A, m, n);
+    cudaMemcpy(h_B, d_B, sizeof(int) * (m * n), cudaMemcpyDeviceToHost);
     printMatrix(h_B, m, n);
     //printMatrix(h_A, m, n);
     //printMatrix(h_B, n, k);
