@@ -64,7 +64,7 @@
 }
 */
 
-__global__ void matmul_CompOpt(int *A, int *B, int *C, int M, int K, int N) {
+__global__ void gpuMatrixComOpt(int *A, int *B, int *C, int M, int K, int N) {
 	/* Computation method optimization.
 	 * Peform outer product instead of inner product to reduce  
 	 * instructions from shared memory from two to one.
