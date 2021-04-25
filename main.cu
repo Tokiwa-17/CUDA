@@ -34,14 +34,15 @@ int main(int argc, char ** argv){
     //initialDataInt(h_B, n * k);
 
     printMatrix(h_A, m, n);
+    printMatrix(h_B, m, n);
     dim3 block, grid;
     block.x = BDIMX, block.y = BDIMY;
     grid.x = (m + block.x - 1) / BDIMX;
     grid.y = (n + block.y - 1) / BDIMY;
     matrixNaiveTrans<<<grid, block>>>(h_B, h_A, m, n);
-    printMatrix(h_B, n, m);
+    printMatrix(h_B, m, n);
     matrixTranspose<<<grid, block>>>(h_B, h_A, m, n);
-    printMatrix(h_B, n, m);
+    printMatrix(h_B, m, n);
     //printMatrix(h_A, m, n);
     //printMatrix(h_B, n, k);
 /*
