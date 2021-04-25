@@ -52,12 +52,12 @@ int main(int argc, char ** argv){
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
 
     // CPU Matrix multiplication by Strassen
-    /*cpuMatrixStrassen Strassen(h_A, h_B, m);
+    Matrix a(h_A, n), b(h_B, n);
     double iStart = cpuSecond();
-    ;
-    cpuMatrixMul(h_A, h_B, h_C, m, n, k);
-    double iElaps = cpuSecond() - iStart;   
-    printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);*/
+    Matrix c = strassen(a, b);
+    double iElaps = cpuSecond() - iStart;  
+    c.checkResult(h_C); 
+    printf("cpu Matrix multiplication by Strassen\telapsed %f sec.\n", iElaps);
 
     // GPU Matrix multiplication
     unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
