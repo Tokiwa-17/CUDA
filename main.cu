@@ -141,7 +141,8 @@ int main(int argc, char ** argv){
 
     // GPU Matrix multiplication by tile, optimized by Computational optimization4
     block.x = TILE_SIZE, block.y = VEC_SIZE;
-    grid.x = (k + TILE_SIZE * VEC_SIZE - 1) / (TILE_SIZE * VEC_SIZE), grid.y = (m + TILE_SIZE - 1) / TILE_SIZE;
+    //grid.x = (k + TILE_SIZE * VEC_SIZE - 1) / (TILE_SIZE * VEC_SIZE), grid.y = (m + TILE_SIZE - 1) / TILE_SIZE;
+    grid.x = (k + TILE_SIZE - 1) / TILE_SIZE, grid.y = (m + TILE_SIZE * VEC_SIZE - 1) / (TILE_SIZE * VEC_SIZE);
     iStart = cpuSecond();
     gpuMatrixComOpt<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
