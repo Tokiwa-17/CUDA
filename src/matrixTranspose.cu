@@ -21,7 +21,7 @@ __global__ void matrixTranspose(int *out, int *in, int nx, int ny){
     ti = iy * nx + ix;
 
     // bidx表示线程在这个线程块中的位置，计算新的坐标位置
-    unsigned int bidx, irow, icol, out_idx;
+    unsigned int bidx, irow, icol;
     bidx = threadIdx.y * blockDim.x + threadIdx.x;
     irow = bidx / blockDim.y;
     icol = bidx % blockDim.y;
