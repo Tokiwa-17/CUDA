@@ -9,7 +9,8 @@ __global__ void matrixNaiveTrans(int *out, int *in, const int nx, const int ny){
     unsigned int iy = blockIdx.y * blockDim.y + threadIdx.y;
 
     if(ix < nx && iy < ny)
-        out[ix * ny + iy] = in[iy * nx + ix];
+        out[ix * ny + iy] = 1;
+        //out[ix * ny + iy] = in[iy * nx + ix];
 }
 
 __global__ void matrixTranspose(int *out, int *in, int nx, int ny){
