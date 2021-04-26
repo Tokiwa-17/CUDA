@@ -41,6 +41,8 @@ void initialDataInt(int* ip, int size);
 
 void printMatrix(int* C, const int nx, const int ny);
 
+void printMatrix(float* C, const int nx, const int ny);
+
 void initDevice(int devNum);
 
 void checkResult(int* hostRef, int* gpuRef, const int N);
