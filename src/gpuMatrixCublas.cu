@@ -31,8 +31,6 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     CHECK(cudaMemcpy(d_A, A, sizeof(int) * (m * n), cudaMemcpyHostToDevice));
     CHECK(cudaMemcpy(d_B, B, sizeof(int) * (n * k), cudaMemcpyHostToDevice));
 
-    printMatrix(d_A, m, n);
-
     float* f_A, *f_B, *f_C, *f_odata;
     CHECK(cudaMalloc((void**)&f_A, sizeof(float) * (m * n)));
     CHECK(cudaMalloc((void**)&f_B, sizeof(float) * (n * k)));
@@ -44,11 +42,18 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
 
     dim3 block(m, 1), grid(n, 1);
 
-    /*intPtrToFloatPtr<<<grid, block>>>(d_A, f_A, m, n);
+    intPtrToFloatPtr<<<grid, block>>>(d_A, f_A, m, n);
     intPtrToFloatPtr<<<grid, block>>>(d_B, f_B, n, k);
     cudaDeviceSynchronize();
 
-    double iStart = cpuSecond();
+    //*******DEBUG********
+    float* test;
+    test = (float*)malloc(sizeof(float) * (m * n));
+    CHECK(cudaMemcpy(test, f_A, sizeof(float) * (m * n), cudaMemcpyDeviceToHost));
+    printMatrix(test, m, n);
+    //********************
+
+    /*double iStart = cpuSecond();
     cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, k, n, 
         &alpha, f_B, ldb, f_A, lda, &beta, f_C, ldc);
     double iElaps = cpuSecond() - iStart;
