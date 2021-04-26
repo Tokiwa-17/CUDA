@@ -64,9 +64,6 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
 
     floatPtrToIntPtr<<<grid, block>>>(f_C, f_odata, m, k);
     cublasGetMatrix(m, k, sizeof(float), f_odata, m, f_odataCopy, m);
-    //floatPtrToIntPtr<<<grid, block>>>(f_odata, f_odataCopy, m, k);
-    printMatrix(f_odataCopy, m, k);
-    printMatrix(C, m, k);
     checkResult(C, f_odataCopy, m);
     
     
