@@ -64,7 +64,7 @@ int main(int argc, char ** argv){
 
     // GPU Matrix Benchmark
     float alpha = 1.0f, beta = 0.0f;
-    gpuMatrixCublas(d_A, d_B, d_C, m, n, k, m, n, k, alpha, beta);
+    gpuMatrixCublas(h_A, h_B, h_C, m, n, k, m, n, k, alpha, beta);
 
     // GPU Matrix multiplication
     unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
