@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
+#include <iostream>
 #include "../include/gpuMatrixCublas.cuh"
 #include "../include/config.cuh"
 #include "../include/til.cuh"
+using namespace std;
 
 __global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
     unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -38,7 +40,7 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     intPtrToFloatPtr<<<grid, block>>>(B, f_B, n, k);
     cudaDeviceSynchronize();
     */
-
+    cout << "test" << endl;
     printMatrix(A, m, n);
 
     //printMatrix(f_A, m, n);
