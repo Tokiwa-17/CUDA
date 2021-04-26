@@ -31,11 +31,12 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     CHECK(cudaMemcpy(d_A, A, sizeof(int) * (m * n), cudaMemcpyHostToDevice));
     CHECK(cudaMemcpy(d_B, B, sizeof(int) * (n * k), cudaMemcpyHostToDevice));
 
-    float* f_A, *f_B, *f_C, *f_odata;
+    float* f_A, *f_B, *f_C;
+    int* f_odata;
     CHECK(cudaMalloc((void**)&f_A, sizeof(float) * (m * n)));
     CHECK(cudaMalloc((void**)&f_B, sizeof(float) * (n * k)));
     CHECK(cudaMalloc((void**)&f_C, sizeof(float) * (m * k)));
-    f_odata = (float*)malloc(sizeof(float) * (m * k));
+    CHECK(cudaMalloc((void**)&f_odata, sizeof(int) * (m * k)));
 
     int *f_odataCopy;
     f_odataCopy = (int*)malloc(sizeof(int) * (m * k));
@@ -61,9 +62,10 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     double iElaps = cpuSecond() - iStart;
     printf("gpu Matrix Benchmark(Cublas)\t\telapsed %f sec.\n", iElaps);
 
-    cublasGetMatrix(m, k, sizeof(float), f_C, m, f_odata, m);
+    floatPtrToIntPtr<<<grid, block>>>(f_C, f_odata);
+    cublasGetMatrix(m, k, sizeof(float), f_odata, m, f_odataCopy, m);
     //floatPtrToIntPtr<<<grid, block>>>(f_odata, f_odataCopy, m, k);
-    printMatrix(f_odata, m, k);
+    printMatrix(f_odataCopy, m, k);
     printMatrix(C, m, k);
     checkResult(C, f_odataCopy, m);
     
@@ -71,6 +73,6 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     cudaFree(f_A);
     cudaFree(f_B);
     cudaFree(f_C);
-    free(f_odata);
+    cudaFree(f_odata);
     free(f_odataCopy);
 }
