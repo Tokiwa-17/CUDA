@@ -11,8 +11,7 @@
 #include "./include/matrixTranspose.cuh"
 #include "./include/matrixComOpt.cuh"
 #include "./include/cpuMatrixStrassen.cuh"
-#include "./include/gpuMatrixStrassen.cuh"
-//#include "./include/cublas.cuh"
+//#include "./include/gpuMatrixStrassen.cuh"
 
 // Include local CUDA header files.
 
