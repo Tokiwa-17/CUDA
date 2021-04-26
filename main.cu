@@ -4,17 +4,21 @@
 #include <cuda_runtime.h>
 #include "./include/config.cuh"
 #include "./include/til.cuh"
+#include "./include/gpuMatrixCublas.cuh"
 #include "./include/matrixNaive.cuh"
 #include "./include/matrixTile.cuh"
 #include "./include/matrixTileWPT.cuh"
 #include "./include/matrixTranspose.cuh"
 #include "./include/matrixComOpt.cuh"
 #include "./include/cpuMatrixStrassen.cuh"
+#include "./include/gpuMatrixStrassen.cuh"
 //#include "./include/cublas.cuh"
 
 // Include local CUDA header files.
 
 int main(int argc, char ** argv){
+
+
     // set up device
     int dev = 0;
     initDevice(dev);
@@ -50,7 +54,7 @@ int main(int argc, char ** argv){
     cpuMatrixMul(h_A, h_B, h_C, m, n, k);
     double iElaps = cpuSecond() - iStart;   
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
-    
+
     // CPU Matrix multiplication by Strassen
     Matrix a(h_A, n), b(h_B, n);
     iStart = cpuSecond();
@@ -178,5 +182,14 @@ int main(int argc, char ** argv){
         "%d>>>\n", iElaps, grid.x, block.x);
         checkResult(h_C, h_odata, m * k);
     }
+
+    free(h_A);
+    free(h_B);
+    free(h_C);
+    free(h_odata);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+
     return 0;
 }
