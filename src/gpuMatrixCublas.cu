@@ -32,7 +32,7 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     int *f_odataCopy;
     f_odataCopy = (int*)malloc(sizeof(int) * (m * k));
 
-    dim3 block(m, 1), grid(n, 1);
+    /*dim3 block(m, 1), grid(n, 1);
     intPtrToFloatPtr<<<grid, block>>>(A, f_A, m, n);
     intPtrToFloatPtr<<<grid, block>>>(B, f_B, n, k);
     cudaDeviceSynchronize();
@@ -47,7 +47,7 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     floatPtrToIntPtr<<<grid, block>>>(f_odata, f_odataCopy, m, k);
 
     checkResult(C, f_odataCopy, m);
-
+    */
     cudaFree(f_A);
     cudaFree(f_B);
     cudaFree(f_C);
