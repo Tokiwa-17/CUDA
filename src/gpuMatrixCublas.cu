@@ -50,6 +50,7 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     float* test;
     test = (float*)malloc(sizeof(float) * (m * n));
     CHECK(cudaMemcpy(test, f_A, sizeof(float) * (m * n), cudaMemcpyDeviceToHost));
+    printMatrix(A, m, n);
     printMatrix(test, m, n);
     //********************
 
