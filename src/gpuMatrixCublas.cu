@@ -37,7 +37,7 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     intPtrToFloatPtr<<<grid, block>>>(B, f_B, n, k);
     cudaDeviceSynchronize();
 
-    printMatrix(A);
+    printMatrix(A, m, n);
 
     printMatrix(f_A, m, n);
     /*
