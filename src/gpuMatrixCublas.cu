@@ -33,13 +33,15 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     f_odataCopy = (int*)malloc(sizeof(int) * (m * k));
 
     dim3 block(m, 1), grid(n, 1);
-    intPtrToFloatPtr<<<grid, block>>>(A, f_A, m, n);
+
+    /*intPtrToFloatPtr<<<grid, block>>>(A, f_A, m, n);
     intPtrToFloatPtr<<<grid, block>>>(B, f_B, n, k);
     cudaDeviceSynchronize();
+    */
 
     printMatrix(A, m, n);
 
-    printMatrix(f_A, m, n);
+    //printMatrix(f_A, m, n);
     /*
     double iStart = cpuSecond();
     cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, k, n, 
