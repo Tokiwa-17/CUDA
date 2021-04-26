@@ -62,6 +62,10 @@ int main(int argc, char ** argv){
     printf("cpu Matrix multiplication by Strassen\telapsed %f sec.\n", iElaps);
     c.checkResult(h_C); 
 
+    // GPU Matrix Benchmark
+    float alpha = 1.0f, beta = 0.0f;
+    gpuMatrixCublas(d_A, d_B, d_C, m, n, k, m, n, k, alpha, beta);
+
     // GPU Matrix multiplication
     unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
     unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
