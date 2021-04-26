@@ -36,6 +36,10 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     intPtrToFloatPtr<<<grid, block>>>(A, f_A, m, n);
     intPtrToFloatPtr<<<grid, block>>>(B, f_B, n, k);
     cudaDeviceSynchronize();
+
+    printMatrix(A);
+
+    printMatrix(f_A, m, n);
     /*
     double iStart = cpuSecond();
     cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, k, n, 
