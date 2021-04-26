@@ -63,8 +63,10 @@ int main(int argc, char ** argv){
     c.checkResult(h_C); 
 
     // GPU Matrix Benchmark
-    float alpha = 1.0f, beta = 0.0f;
-    gpuMatrixCublas(h_A, h_B, h_C, m, n, k, m, n, k, alpha, beta);
+    if(m < 2048){
+        float alpha = 1.0f, beta = 0.0f;
+        gpuMatrixCublas(h_A, h_B, h_C, m, n, k, m, n, k, alpha, beta);
+    }
 
     // GPU Matrix multiplication
     unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
