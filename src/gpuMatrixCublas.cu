@@ -62,7 +62,7 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     double iElaps = cpuSecond() - iStart;
     printf("gpu Matrix Benchmark(Cublas)\t\telapsed %f sec.\n", iElaps);
 
-    floatPtrToIntPtr<<<grid, block>>>(f_C, f_odata);
+    floatPtrToIntPtr<<<grid, block>>>(f_C, f_odata, m, k);
     cublasGetMatrix(m, k, sizeof(float), f_odata, m, f_odataCopy, m);
     //floatPtrToIntPtr<<<grid, block>>>(f_odata, f_odataCopy, m, k);
     printMatrix(f_odataCopy, m, k);
