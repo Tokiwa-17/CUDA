@@ -54,8 +54,6 @@ int main(int argc, char ** argv){
     double iElaps = cpuSecond() - iStart;   
     printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
 
-    printMatrix(h_C, m, k);
-
     // CPU Matrix multiplication by Strassen
     Matrix a(h_A, n), b(h_B, n);
     iStart = cpuSecond();
