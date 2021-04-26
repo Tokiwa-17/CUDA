@@ -25,10 +25,16 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     cublasHandle_t handle;
     cublasCreate(&handle);
 
+    int *d_A, *d_B;
+    CHECK(cudaMalloc((void**)&d_A, sizeof(int) * (m * n)));
+    CHECK(cudaMalloc((void**)&d_B, sizeof(int) * (n * k)));
+    CHECK(cudaMemcpy(d_A, A, sizeof(int) * (m * n), cudaMemcpyHostToDevice));
+    CHECK(cudaMemcpy(d_B, B, sizeof(int) * (n * k), cudaMemcpyHostToDevice));
+
     float* f_A, *f_B, *f_C, *f_odata;
-    cudaMalloc((void**)&f_A, sizeof(float) * (m * n));
-    cudaMalloc((void**)&f_B, sizeof(float) * (n * k));
-    cudaMalloc((void**)&f_C, sizeof(float) * (m * k));
+    CHECK(cudaMalloc((void**)&f_A, sizeof(float) * (m * n)));
+    CHECK(cudaMalloc((void**)&f_B, sizeof(float) * (n * k)));
+    CHECK(cudaMalloc((void**)&f_C, sizeof(float) * (m * k)));
     f_odata = (float*)malloc(sizeof(float) * (m * k));
 
     int *f_odataCopy;
@@ -36,15 +42,10 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
 
     dim3 block(m, 1), grid(n, 1);
 
-    /*intPtrToFloatPtr<<<grid, block>>>(A, f_A, m, n);
-    intPtrToFloatPtr<<<grid, block>>>(B, f_B, n, k);
+    intPtrToFloatPtr<<<grid, block>>>(d_A, f_A, m, n);
+    intPtrToFloatPtr<<<grid, block>>>(d_B, f_B, n, k);
     cudaDeviceSynchronize();
-    */
-    cout << "test" << endl;
-    printMatrix(A, m, n);
 
-    //printMatrix(f_A, m, n);
-    /*
     double iStart = cpuSecond();
     cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, k, n, 
         &alpha, f_B, ldb, f_A, lda, &beta, f_C, ldc);
@@ -55,7 +56,10 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     floatPtrToIntPtr<<<grid, block>>>(f_odata, f_odataCopy, m, k);
 
     checkResult(C, f_odataCopy, m);
-    */
+    
+    printMatrix(C, m, k);
+    printMatrix(f_odataCopy, m, k);
+    
     cudaFree(f_A);
     cudaFree(f_B);
     cudaFree(f_C);
