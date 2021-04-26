@@ -4,8 +4,8 @@
 #include "../include/config.cuh"
 #include "../include/til.cuh"
 
-void gpuMatrixCublas(float* d_A, float* d_B, float* d_C, int lda, int ldb, int ldc,
-                     int m, int n, int k, double alpha, double beta){
+void gpuMatrixCublas(float* A, float* B, float* C, int lda, int ldb, int ldc,
+                     int m, int n, int k, float alpha, float beta){
     
     cudaStatus_t stat;
     cublasHandle_t handle;
