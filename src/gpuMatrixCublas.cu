@@ -46,21 +46,22 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     intPtrToFloatPtr<<<grid, block>>>(d_B, f_B, n, k);
     cudaDeviceSynchronize();
 
-    //*******DEBUG********
+    /********DEBUG********
     float* test;
     test = (float*)malloc(sizeof(float) * (m * n));
     CHECK(cudaMemcpy(test, f_A, sizeof(float) * (m * n), cudaMemcpyDeviceToHost));
     printMatrix(A, m, n);
     printMatrix(test, m, n);
-    //********************
+    *********************/
 
-    /*double iStart = cpuSecond();
+    double iStart = cpuSecond();
     cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, k, n, 
         &alpha, f_B, ldb, f_A, lda, &beta, f_C, ldc);
+    //cublas 列主序所以调换f_B和f_A的位置
     double iElaps = cpuSecond() - iStart;
     printf("gpu Matrix Benchmark(Cublas)\t\telapsed %f sec.\n", iElaps);
 
-    cublasGetMatrix(m, k, sizeof(float), f_C, m, f_odata, m);
+    /*cublasGetMatrix(m, k, sizeof(float), f_C, m, f_odata, m);
     floatPtrToIntPtr<<<grid, block>>>(f_odata, f_odataCopy, m, k);
 
     checkResult(C, f_odataCopy, m);
