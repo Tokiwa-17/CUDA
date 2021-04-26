@@ -5,3 +5,4 @@
 #define WPT 2
 #define BDIMY 16
 #define BDIMX 16
+#define EXIT_FAILURE 1
