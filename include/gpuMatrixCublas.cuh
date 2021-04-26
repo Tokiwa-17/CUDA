@@ -8,5 +8,7 @@
 #include <cmath>
 #include <cassert>
 
-void gpuMatrixCublas(float* A, float* B, float* C, int lda, int ldb, int ldc,
+__global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n);
+
+void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     int m, int n, int k, float alpha, float beta);
