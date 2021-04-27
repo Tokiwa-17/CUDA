@@ -103,7 +103,7 @@ void checkResult(int* hostRef, int* gpuRef, const int N){
     printf("Check result success!\n");
 }
 
-__global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
+/*__global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
     unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
 
     out[idx] = in[idx] * 1.0f;
@@ -114,6 +114,19 @@ __global__ void floatPtrToIntPtr(float *in, int* out, unsigned int m, unsigned i
     unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
 
     out[idx] = (int)in[idx];
+}*/
+
+__global__ void intPtrToFloatPtr(int *in, float *out, unsigned int m, unsigned int n){
+    unsigned g_X = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned g_Y = blockIdx.y * blockDim.y + threadIdx.y;
+    if(g_X < m && g_Y < n)
+        out[g_Y][g_X] = in[g_Y][g_X] * 1.0f;
 }
 
+__global__ void floatPtrToIntPtr(float *in, int *out, unsigned int m, unsigned int n){
+    unsigned g_X = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned g_Y = blockIdx.y * blockDim.y + threadIdx.y;
+    if(g_X < m && g_Y < n)
+        out[g_Y][g_X] = (int)in[g_Y][g_X];
+}
 
