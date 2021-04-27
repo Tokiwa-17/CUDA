@@ -29,7 +29,7 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     int *f_odataCopy;
     f_odataCopy = (int*)malloc(sizeof(int) * (m * k));
 
-    dim3 block(m, 1), grid(n, 1);
+    dim3 block(BLOCK_SIZE, BLOCK_SIZE), grid((m + BLOCK_SIZE - 1) / BLOCK_SIZE, (n + BLOCK_SIZE - 1) / BLOCK_SIZE);
 
     intPtrToFloatPtr<<<grid, block>>>(d_A, f_A, m, n);
     intPtrToFloatPtr<<<grid, block>>>(d_B, f_B, n, k);
