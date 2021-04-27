@@ -102,3 +102,18 @@ void checkResult(int* hostRef, int* gpuRef, const int N){
     }
     printf("Check result success!\n");
 }
+
+__global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
+    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+    out[idx] = in[idx] * 1.0f;
+}
+
+
+__global__ void floatPtrToIntPtr(float *in, int* out, unsigned int m, unsigned int n){
+    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+    out[idx] = (int)in[idx];
+}
+
+
