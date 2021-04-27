@@ -120,13 +120,13 @@ __global__ void intPtrToFloatPtr(int *in, float *out, unsigned int m, unsigned i
     unsigned g_X = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned g_Y = blockIdx.y * blockDim.y + threadIdx.y;
     if(g_X < m && g_Y < n)
-        out[g_Y][g_X] = in[g_Y][g_X] * 1.0f;
+        out[g_Y * n + g_X] = in[g_Y * n + g_X] * 1.f;
 }
 
 __global__ void floatPtrToIntPtr(float *in, int *out, unsigned int m, unsigned int n){
     unsigned g_X = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned g_Y = blockIdx.y * blockDim.y + threadIdx.y;
     if(g_X < m && g_Y < n)
-        out[g_Y][g_X] = (int)in[g_Y][g_X];
+        out[g_Y * n + g_X] = (int)in[g_Y * n + g_X];
 }
 
