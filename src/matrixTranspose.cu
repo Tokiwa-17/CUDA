@@ -13,7 +13,7 @@ __global__ void floatPtrToIntPtr(float *in, int* out, unsigned int m, unsigned i
     out[idx] = (int)in[idx];
 }
 
-__global__ void matrixTranspose(int *A, int *B, int m, int n){
+void matrixTranspose(int *A, int *B, int m, int n){
 
     // 输入矩阵A, 输出矩阵B = A ^ T.
     cublasHandle_t handle;
