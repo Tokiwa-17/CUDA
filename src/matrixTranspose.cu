@@ -27,7 +27,7 @@ void matrixTranspose(int *A, int *B, int m, int n){
 
     float alpha = 1.f, beta = 0.f;
 
-    cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, n, &alpha, f_B, m, f_A, m, &beta, f_B, m);
+    cublasSgeam(handle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, &alpha, f_A, m, &beta, f_B, m, f_B, m);
 
     //********DEBUG********
     float* testA, *testB;
