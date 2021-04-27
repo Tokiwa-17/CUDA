@@ -28,6 +28,8 @@ void matrixTranspose(int *A, int *B, int m, int n){
 
     floatPtrToIntPtr<<<grid, block>>>(f_B, d_B, m, n);
 
+    CHECK(cudaMemcpy(B, d_B, sizeof(int) * (m * n), cudaMemcpyDeviceToHost));
+
     cudaFree(d_A);
     cudaFree(d_B);
     cudaFree(f_A);
