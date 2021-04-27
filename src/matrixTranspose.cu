@@ -36,7 +36,7 @@ void matrixTranspose(int *A, int *B, int m, int n){
 
     float alpha = 0.f, beta = 1.f;
 
-    cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, &alpha, f_A, m, &beta, f_B, m);
+    cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, n, &alpha, f_B, m, f_A, m, &beta, f_B, m);
 
     floatPtrToIntPtr<<<grid, block>>>(f_B, d_B, m, n);
 
