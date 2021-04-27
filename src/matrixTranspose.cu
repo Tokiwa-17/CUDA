@@ -29,7 +29,7 @@ void matrixTranspose(int *A, int *B, int m, int n){
 
     cublasSgeam(handle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, &alpha, f_A, m, &beta, f_B, m, f_B, m);
 
-    //********DEBUG********
+    /*********DEBUG********
     float* testA, *testB;
     testA = (float*)malloc(sizeof(float) * (m * n));
     testB = (float*)malloc(sizeof(float) * (m * n));
@@ -37,7 +37,7 @@ void matrixTranspose(int *A, int *B, int m, int n){
     CHECK(cudaMemcpy(testB, f_B, sizeof(float) * (m * n), cudaMemcpyDeviceToHost));
     printMatrix(testA, m, n);
     printMatrix(testB, m, n);
-    //*********************/
+    ***********************/
 
     floatPtrToIntPtr<<<grid, block>>>(f_B, d_B, m, n);
 
