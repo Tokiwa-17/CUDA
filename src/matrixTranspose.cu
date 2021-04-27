@@ -2,18 +2,6 @@
 #include "../include/til.cuh"
 #include "../include/matrixTranspose.cuh"
 
-__global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
-    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-    out[idx] = in[idx] * 1.0f;
-}
-
-__global__ void floatPtrToIntPtr(float *in, int* out, unsigned int m, unsigned int n){
-    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-    out[idx] = (int)in[idx];
-}
-
 void matrixTranspose(int *A, int *B, int m, int n){
 
     // 输入矩阵A, 输出矩阵B = A ^ T.
