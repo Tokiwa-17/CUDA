@@ -1,4 +1,5 @@
 #include "../include/config.cuh"
+#include "../include/til.cuh"
 #include "../include/matrixTranspose.cuh"
 
 __global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
