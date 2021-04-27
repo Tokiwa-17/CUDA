@@ -1,40 +1,46 @@
-#include <stdio.h>
-#include <cuda_runtime.h>
 #include "../include/config.cuh"
 #include "../include/matrixTranspose.cuh"
 
-__global__ void matrixNaiveTrans(int *out, int *in, const int nx, const int ny){
-    // coordinate(ix, iy)
-    unsigned int ix = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int iy = blockIdx.y * blockDim.y + threadIdx.y;
+__global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
+    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-    if(ix < nx && iy < ny)
-        out[ix * ny + iy] = in[iy * nx + ix];
+    out[idx] = in[idx] * 1.0f;
 }
 
-__global__ void matrixTranspose(int *out, int *in, int nx, int ny){
-    __shared__ int tile[BDIMY][BDIMX];
-    unsigned int ix, iy, ti, to;
-    //计算线程的全局坐标
-    ix = blockIdx.x * blockDim.x + threadIdx.x;
-    iy = blockIdx.y * blockDim.y + threadIdx.y;
-    ti = iy * nx + ix;
+__global__ void floatPtrToIntPtr(float *in, int* out, unsigned int m, unsigned int n){
+    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-    // bidx表示线程在这个线程块中的位置，计算新的坐标位置
-    unsigned int bidx, irow, icol;
-    bidx = threadIdx.y * blockDim.x + threadIdx.x;
-    irow = bidx / blockDim.y;
-    icol = bidx % blockDim.y;
+    out[idx] = (int)in[idx];
+}
 
-    // 计算转置后的全局坐标
-    ix = blockIdx.y * blockDim.y + icol;
-    iy = blockIdx.x * blockDim.x + irow;
-    to = iy * ny + ix;
+__global__ void matrixTranspose(int *A, int *B, int m, int n){
 
-    if(ix < nx && iy < ny){
-        tile[threadIdx.y][threadIdx.x] = in[ti];
-        __syncthreads();
-        out[to] = tile[icol][irow];
-    }
+    // 输入矩阵A, 输出矩阵B = A ^ T.
+    cublasHandle_t handle;
+    cublasCreate(&handle);
 
+    int *d_A, *d_B;
+    CHECK(cudaMalloc((void **)&d_A, sizeof(int) * (m * n)));
+    CEECK(cudaMalloc((void **)&d_B, sizeof(int) * (m * n)));
+    
+    CHECK(cudaMemcpy(d_A, A, sizeof(int) * (m * n), cudaMemcpyHostToDevice));
+
+    float *f_A, *f_B;
+    CHECK(cudaMalloc((void **)&f_A, sizeof(float) * (m * n)));
+    CHECK(cudaMalloc((void **)&f_B, sizeof(float) * (m * n)));
+
+    dim3 block(m, 1), grid(n, 1);
+
+    intPtrToFloatPtr(d_A, f_A, m, n);
+
+    float alpha = 0.f, beta = 1.f;
+
+    cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, &alpha, f_A, m, &beta, f_B, m);
+
+    floatPtrToIntPtr(f_B, d_B, m, n);
+
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(f_A);
+    cudaFree(f_B);
 }
