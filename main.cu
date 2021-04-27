@@ -44,14 +44,8 @@ int main(int argc, char ** argv){
     cudaMalloc((void**)&d_B, sizeof(int) * (n * k));
     cudaMalloc((void**)&d_C, sizeof(int) * (m * k));
 
-    matrixTranspose(h_A, h_B, m, n);
-
-    printMatrix(h_A, m, n);
-
-    printMatrix(h_B, m, n);
-
     // Copy matrix A and B from host to device memory
-    /*cudaMemcpy(d_A, h_A, sizeof(int) * (m * n), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_A, h_A, sizeof(int) * (m * n), cudaMemcpyHostToDevice);
     cudaMemcpy(d_B, h_B, sizeof(int) * (n * k), cudaMemcpyHostToDevice);
 
     // CPU Matrix multiplication
@@ -194,7 +188,6 @@ int main(int argc, char ** argv){
         checkResult(h_C, h_odata, m * k);
     }
 
-    */
     free(h_A);
     free(h_B);
     free(h_C);
