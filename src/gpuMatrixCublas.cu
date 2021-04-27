@@ -6,16 +6,8 @@
 #include "../include/til.cuh"
 using namespace std;
 
-__global__ void intPtrToFloatPtr(int *in, float* out, unsigned int m, unsigned int n){
-    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-    out[idx] = in[idx] * 1.0f;
-}
-
-__global__ void floatPtrToIntPtr(float *in, int* out, unsigned int m, unsigned int n){
-    unsigned idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-    out[idx] = (int)in[idx];
+__global__ void intPtrToFloatPtr(int *in, float *out, unsigned int m, unsigned int n){
+    unsigned idx = 
 }
 
 void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
