@@ -22,7 +22,7 @@ void matrixTranspose(int *A, int *B, int m, int n){
 
     int *d_A, *d_B;
     CHECK(cudaMalloc((void **)&d_A, sizeof(int) * (m * n)));
-    CEECK(cudaMalloc((void **)&d_B, sizeof(int) * (m * n)));
+    CHECK(cudaMalloc((void **)&d_B, sizeof(int) * (m * n)));
     
     CHECK(cudaMemcpy(d_A, A, sizeof(int) * (m * n), cudaMemcpyHostToDevice));
 
@@ -32,13 +32,13 @@ void matrixTranspose(int *A, int *B, int m, int n){
 
     dim3 block(m, 1), grid(n, 1);
 
-    intPtrToFloatPtr(d_A, f_A, m, n);
+    intPtrToFloatPtr<<<grid, block>>>(d_A, f_A, m, n);
 
     float alpha = 0.f, beta = 1.f;
 
     cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, m, n, &alpha, f_A, m, &beta, f_B, m);
 
-    floatPtrToIntPtr(f_B, d_B, m, n);
+    floatPtrToIntPtr<<<grid, block>>>(f_B, d_B, m, n);
 
     cudaFree(d_A);
     cudaFree(d_B);
