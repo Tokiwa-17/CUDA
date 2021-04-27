@@ -21,7 +21,7 @@ void matrixTranspose(int *A, int *B, int m, int n){
     CHECK(cudaMalloc((void **)&f_A, sizeof(float) * (m * n)));
     CHECK(cudaMalloc((void **)&f_B, sizeof(float) * (m * n)));
 
-    dim3 block(m, 1), grid(n, 1);
+    dim3 block(BLOCK_SIZE, BLOCK_SIZE), grid((n + BLOCK_SIZE - 1) / BLOCK_SIZE, (m + BLOCK_SIZE - 1) / BLOCK_SIZE);
 
     intPtrToFloatPtr<<<grid, block>>>(d_A, f_A, m, n);
 
