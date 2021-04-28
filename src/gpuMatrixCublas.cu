@@ -47,6 +47,8 @@ void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
     cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, k, n, 
         &alpha, f_B, ldb, f_A, lda, &beta, f_C, ldc);
     //cublas 列主序所以调换f_B和f_A的位置
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
     double iElaps = cpuSecond() - iStart;
     printf("gpu Matrix Benchmark(Cublas)\t\telapsed %f sec.\n", iElaps);
 
