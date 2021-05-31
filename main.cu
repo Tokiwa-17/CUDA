@@ -40,18 +40,18 @@ int main(int argc, char ** argv){
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
     matrixTranspose(h_B, h_BT, n, k);
-
-    printMatrix(h_B, n, k);
-    printMatrix(h_BT, n, k);
-/*    // Allocate memory space on the device
-    int *d_A, *d_B, *d_C;
+ 
+    // Allocate memory space on the device
+    int *d_A, *d_B, *d_BT *d_C;
     cudaMalloc((void**)&d_A, sizeof(int) * (m * n));
     cudaMalloc((void**)&d_B, sizeof(int) * (n * k));
+    cudaMalloc((void**)&d_BT,sizeof(int) * (n * k));
     cudaMalloc((void**)&d_C, sizeof(int) * (m * k));
 
     // Copy matrix A and B from host to device memory
     cudaMemcpy(d_A, h_A, sizeof(int) * (m * n), cudaMemcpyHostToDevice);
     cudaMemcpy(d_B, h_B, sizeof(int) * (n * k), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_BT,h_BT,sizeof(int) * (n * k), cudaMemcpyHostToDevice);
 
     // CPU Matrix multiplication
     double iStart = cpuSecond();
@@ -161,14 +161,14 @@ int main(int argc, char ** argv){
         dim3 block(BLOCK_SIZE, BLOCK_SIZE);
 
         iStart = cpuSecond();
-        gpuMatrixMulCoalescing<< <grid, block >> > (d_A, d_B, d_C, m, n, k);
+        gpuMatrixMulCoalescing<< <grid, block >> > (d_A, d_BT, d_C, m, n, k);
         CHECK(cudaDeviceSynchronize());
         CHECK(cudaGetLastError());
         iElaps = cpuSecond() - iStart;
     }
     else{
         iStart = cpuSecond();
-        gpuMatrixMulTile<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+        gpuMatrixMulTile<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
         CHECK(cudaDeviceSynchronize());
         CHECK(cudaGetLastError());
         iElaps = cpuSecond() - iStart;
@@ -251,11 +251,13 @@ int main(int argc, char ** argv){
     }
     free(h_A);
     free(h_B);
+    free(h_BT);
     free(h_C);
     free(h_odata);
     cudaFree(d_A);
     cudaFree(d_B);
+    cudaFree(d_BT);
     cudaFree(d_C);
-*/
+
     return 0;
 }
