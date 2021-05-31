@@ -36,7 +36,7 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
         __syncthreads();
 
         for(int k = 0;k < TILE_SIZE; k++)
-            accu += A_tile[ty][k] * B_tile[ty][k];
+            accu += A_tile[ty][k] * B_tile[tx][k];
         
         __syncthreads();
     }
