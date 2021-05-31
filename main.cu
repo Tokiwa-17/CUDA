@@ -42,7 +42,7 @@ int main(int argc, char ** argv){
     matrixTranspose(h_B, h_BT, n, k);
  
     // Allocate memory space on the device
-    int *d_A, *d_B, *d_BT *d_C;
+    int *d_A, *d_B, *d_BT, *d_C;
     cudaMalloc((void**)&d_A, sizeof(int) * (m * n));
     cudaMalloc((void**)&d_B, sizeof(int) * (n * k));
     cudaMalloc((void**)&d_BT,sizeof(int) * (n * k));
