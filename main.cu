@@ -13,7 +13,7 @@
 #include "./include/matrixComOpt.cuh"
 #include "./include/cpuMatrixStrassen.cuh"
 //#include "./include/gpuMatrixStrassen.cuh"
-
+using namespace std;
 // Include local CUDA header files.
 
 int main(int argc, char ** argv){
@@ -41,7 +41,7 @@ int main(int argc, char ** argv){
     initialDataInt(h_B, n * k);
     matrixTranspose(h_B, h_BT, n, k);
 
-
+    cout << "test" << endl;
     printMatrix(h_B, n, k);
     printMatrix(h_BT, n, k);
 /*    // Allocate memory space on the device
