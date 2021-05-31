@@ -36,7 +36,7 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
         __syncthreads();
 
         for(int k = 0;k < TILE_SIZE; k++)
-            accu += A_tile[ty][k] * B_tile[k][tx];
+            accu += A_tile[ty][k] * B_tile[tx][k];
         
         __syncthreads();
     }
@@ -44,3 +44,27 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
     int cIdx = k * TILE_SIZE * by + TILE_SIZE * bx;
     d_C[cIdx + k * ty + tx] = accu;
 }
+
+/*__global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int n, int k){
+    __shared__ int A_tile[blockDim.y][blockDim.x];
+    __shared__ int B_tile[blockDim.x][blockDim.y];
+
+    int accu = 0;
+
+    int aBegin = blockIdx.y * TILE_SIZE * n;
+    int aEnd = aBegin + n - 1;
+    int aStride = TILE_SIZE;
+
+    for(int t = aBegin; t <= aEnd; t += aStride){
+        int i = blockIdx.y * blockDim.y + threadIdx.y;
+        int j = tileIdx * blockDim.x + threadIdx.x;
+
+        A_tile[threadIdx.y][threadIdx.x] = d_A[i + j * n];
+        B_tile[threadIdx.x][threadIdx.y] = d_B[i + j * k];
+
+        __syncthreads();
+
+        for(int k = 0; k <= threadDim.x;k++)
+            accu += A_tile(thread)
+    }
+}*/
