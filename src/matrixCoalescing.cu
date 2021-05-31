@@ -20,8 +20,8 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
     int aStride = TILE_SIZE;
 
     // B是竖着的条, bBegin指向Tile第一列的开始，每循环一次竖着移动一个Tile
-    int bBegin = TILE_SIZE * bx;
-    int bStride = TILE_SIZE * k;
+    int bBegin = blockIdx.y * TILE_SIZE * k;
+    int bStride = TILE_SIZE;
 
     int accu = 0;
 
@@ -30,12 +30,12 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
         //load share memory
         //从Tile中取出一个点放到共享内存中
         A_tile[ty][tx] = d_A[i + n * ty + tx];
-        B_tile[tx][ty] = d_B[j + k * tx + ty];
+        B_tile[tx][ty] = d_B[j + k * ty + tx];
         //B_tile[tx][ty] = d_B[j + k * tx + ty];
         __syncthreads();
 
         for(int k = 0;k < TILE_SIZE; k++)
-            accu += A_tile[ty][k] * B_tile[k][tx];
+            accu += A_tile[ty][k] * B_tile[ty][k];
         
         __syncthreads();
     }
