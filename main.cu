@@ -176,7 +176,7 @@ int main(int argc, char ** argv){
     }
     //printMatrix(h_odata, m, k);
 
-    printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
+    printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
     
@@ -189,7 +189,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
+    printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
 
@@ -202,7 +202,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printf("gpu Matrix multiplication3(WPT = 4)\telapsed %f sec. <<<grid %d block "
+    printf("gpu Matrix multiplication4(WPT = 4)\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
 
@@ -215,7 +215,7 @@ int main(int argc, char ** argv){
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
     CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    printf("gpu Matrix multiplication3(WPT = 8)\telapsed %f sec. <<<grid %d block "
+    printf("gpu Matrix multiplication4(WPT = 8)\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
 
@@ -230,7 +230,7 @@ int main(int argc, char ** argv){
         CHECK(cudaGetLastError());
         iElaps = cpuSecond() - iStart;
         CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-        printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
+        printf("gpu Matrix multiplication5\t\telapsed %f sec. <<<grid %d block "
         "%d>>>\n", iElaps, grid.x, block.x);
         checkResult(h_C, h_odata, m * k);
     }
@@ -245,7 +245,7 @@ int main(int argc, char ** argv){
         CHECK(cudaGetLastError());
         iElaps = cpuSecond() - iStart;
         CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-        printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
+        printf("gpu Matrix multiplication5\t\telapsed %f sec. <<<grid %d block "
         "%d>>>\n", iElaps, grid.x, block.x);
         checkResult(h_C, h_odata, m * k);
     }
