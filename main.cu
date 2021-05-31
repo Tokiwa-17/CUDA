@@ -37,11 +37,12 @@ int main(int argc, char ** argv){
     int *h_odata = (int*)malloc(sizeof(int) * (m * k));
 
     // Initialize 
+    cout << "test1" << endl;
     initialDataInt(h_A, m * n);
     initialDataInt(h_B, n * k);
     matrixTranspose(h_B, h_BT, n, k);
 
-    cout << "test" << endl;
+    cout << "test2" << endl;
     printMatrix(h_B, n, k);
     printMatrix(h_BT, n, k);
 /*    // Allocate memory space on the device
