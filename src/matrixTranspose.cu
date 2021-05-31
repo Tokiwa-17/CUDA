@@ -7,10 +7,6 @@ void matrixTranspose(int *A, int *B, int m, int n){
     // 输入矩阵A, 输出矩阵B = A ^ T.
     cublasHandle_t handle;
     cublasCreate(&handle);
-
-    printMatrix(A, m, n);
-    printMatrix(B, m, n);
-
     int *d_A, *d_B;
     CHECK(cudaMalloc((void **)&d_A, sizeof(int) * (m * n)));
     CHECK(cudaMalloc((void **)&d_B, sizeof(int) * (m * n)));
