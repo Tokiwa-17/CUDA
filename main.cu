@@ -250,7 +250,6 @@ int main(int argc, char ** argv){
         "%d>>>\n", iElaps, grid.x, block.x);
         checkResult(h_C, h_odata, m * k);
     }
-    */
     free(h_A);
     free(h_B);
     free(h_C);
@@ -258,6 +257,6 @@ int main(int argc, char ** argv){
     cudaFree(d_A);
     cudaFree(d_B);
     cudaFree(d_C);
-
+*/
     return 0;
 }
