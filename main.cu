@@ -116,7 +116,7 @@ int main(int argc, char ** argv){
         iElaps = cpuSecond() - iStart;
         CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
     }
-    //printMatrix(h_odata, m, k);
+    printMatrix(h_odata, m, k);
 
     printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
@@ -174,13 +174,13 @@ int main(int argc, char ** argv){
         iElaps = cpuSecond() - iStart;
         CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
     }
-    //printMatrix(h_odata, m, k);
+    printMatrix(h_odata, m, k);
 
     printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
     
-    // GPU Matrix multiplication by tile, optimized by WPT
+    /*// GPU Matrix multiplication by tile, optimized by WPT
     block.x = TILE_SIZE / WPT, block.y = TILE_SIZE;
     grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
     iStart = cpuSecond();
@@ -249,6 +249,7 @@ int main(int argc, char ** argv){
         "%d>>>\n", iElaps, grid.x, block.x);
         checkResult(h_C, h_odata, m * k);
     }
+    */
     free(h_A);
     free(h_B);
     free(h_BT);
