@@ -1,56 +1,278 @@
+// Include C++ header files.
+#include <iostream>
 #include <stdio.h>
 #include <cuda_runtime.h>
-#include "../include/config.cuh"
-#include "../include/matrixPrefetch.cuh"
+#include "./include/config.cuh"
+#include "./include/til.cuh"
+#include "./include/gpuMatrixCublas.cuh"
+#include "./include/matrixNaive.cuh"
+#include "./include/matrixTile.cuh"
+#include "./include/matrixCoalescing.cuh"
+#include "./include/matrixBankConflict.cuh"
+#include "./include/matrixTileWPT.cuh"
+#include "./include/matrixTranspose.cuh"
+#include "./include/matrixComOpt.cuh"
+#include "./include/cpuMatrixStrassen.cuh"
+#include "./include/matrixPrefetch.cuh"
+//#include "./include/gpuMatrixStrassen.cuh"
+using namespace std;
+// Include local CUDA header files.
 
-__global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n, int k){
-    int bx = blockIdx.x, by = blockIdx.y;
-    int tx = threadIdx.x, ty = threadIdx.y;
-    __shared__ int A_tile[TILE_SIZE * TILE_SIZE];
-    __shared__ int A_tileNxt[TILE_SIZE * TILE_SIZE];
-    
-    //register for result of C at each thread
-    int cval[TILE_SIZE] = {0};
+int main(int argc, char ** argv){
 
-    int aBegin = n * TILE_SIZE * by;
-    int aEnd = aBegin + n - 1;
-    int aStride = TILE_SIZE;
-    
-    int bBegin = TILE_SIZE * VEC_SIZE * bx;
-    int bStride = TILE_SIZE * k;
 
-    int *cur = A_tile;
-    int *nxt = A_tileNxt;
-    for(int i = 0;i < TILE_SIZE / VEC_SIZE;i++)
-        cur[(i * VEC_SIZE + ty) + TILE_SIZE * tx] = d_A[aBegin + n * (i * VEC_SIZE + ty) + tx];
-    
-    __syncthreads();
+    // set up device
+    int dev = 0;
+    initDevice(dev);
 
-    for(int a = aBegin, b = bBegin; a <= aEnd; a += aStride, b += bStride){
-        if(a + aStride <= aEnd){
-            for(int i = 0;i < TILE_SIZE / VEC_SIZE; i++)
-                nxt[(i * VEC_SIZE) + ty + TILE_SIZE * tx] = d_A[a + n * (i * VEC_SIZE + ty) + tx + aStride];
-        }
-        int *aptr = cur;
-        int *bptr = &d_B[b + TILE_SIZE * ty + tx];
+    // input m, n, k
+    int m = 320, n = 320, k = 320;
+    if(argc > 1) m = atoi(argv[1]);
+    if(argc > 2) n = atoi(argv[2]);
+    if(argc > 3) k = atoi(argv[3]);
 
-        for(int i = 0;i < TILE_SIZE;i++){
-            int bval = *bptr;
-            for(int j = 0;j < TILE_SIZE;j++)
-                cval[j] += aptr[j] * bval;
-            aptr += TILE_SIZE;
-            bptr += TILE_SIZE;
-        }
-        __syncthreads();
+    // Allocate memory space on the host
+    int *h_A = (int*)malloc(sizeof(int) * (m * n));
+    int *h_B = (int*)malloc(sizeof(int) * (n * k));
+    int *h_BT =(int*)malloc(sizeof(int) * (n * k));
+    int *h_C = (int*)malloc(sizeof(int) * (m * k));
+    int *h_odata = (int*)malloc(sizeof(int) * (m * k));
 
-        int *tmp = cur;
-        cur = nxt;
-        nxt = tmp;
+    // Initialize 
+    initialDataInt(h_A, m * n);
+    initialDataInt(h_B, n * k);
+    matrixTranspose(h_B, h_BT, n, k);
+ 
+    // Allocate memory space on the device
+    int *d_A, *d_B, *d_BT, *d_C;
+    cudaMalloc((void**)&d_A, sizeof(int) * (m * n));
+    cudaMalloc((void**)&d_B, sizeof(int) * (n * k));
+    cudaMalloc((void**)&d_BT,sizeof(int) * (n * k));
+    cudaMalloc((void**)&d_C, sizeof(int) * (m * k));
+
+    // Copy matrix A and B from host to device memory
+    cudaMemcpy(d_A, h_A, sizeof(int) * (m * n), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, sizeof(int) * (n * k), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_BT,h_BT,sizeof(int) * (n * k), cudaMemcpyHostToDevice);
+
+    // CPU Matrix multiplication
+    double iStart = cpuSecond();
+    cpuMatrixMul(h_A, h_B, h_C, m, n, k);
+    double iElaps = cpuSecond() - iStart;   
+    printf("cpu Matrix multiplication\t\telapsed %f sec.\n", iElaps);
+
+    // CPU Matrix multiplication by Strassen
+    Matrix a(h_A, n), b(h_B, n);
+    iStart = cpuSecond();
+    Matrix c = strassen(a, b);
+    iElaps = cpuSecond() - iStart;  
+    printf("cpu Matrix multiplication by Strassen\telapsed %f sec.\n", iElaps);
+    c.checkResult(h_C); 
+
+    // GPU Matrix Benchmark
+    float alpha = 1.0f, beta = 0.0f;
+    gpuMatrixCublas(h_A, h_B, h_C, m, n, k, m, n, k, alpha, beta);
+
+    // GPU Matrix multiplication
+    unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    dim3 grid(gridRows, gridCols);
+    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+
+    iStart = cpuSecond();
+    gpuMatrixMul<< <grid, block >> > (d_A, d_B, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) * (m * k), cudaMemcpyDeviceToHost));
+
+    printf("gpu Matrix multiplication\t\telapsed %f sec. <<<grid %d block "
+        "%d>>>\n", iElaps, grid.x, block.x);
+
+    // Check result
+    checkResult(h_C, h_odata, m * k);
+
+    //cublas(d_A, d_B, d_C, m, n, k);
+
+
+    // GPU Matrix multiplication by tile
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    if(grid.x == 0 || grid.y == 0){
+        unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
+        unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
+        dim3 grid(gridRows, gridCols);
+        dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+
+        iStart = cpuSecond();
+        gpuMatrixMul<< <grid, block >> > (d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
     }
-    int c = k * TILE_SIZE * by + TILE_SIZE * VEC_SIZE * bx;
-    c += TILE_SIZE * ty + tx;
-    for(int i = 0;i < TILE_SIZE;i++){
-        d_C[c] = cval[i];
-        c += k;
+    else{
+        iStart = cpuSecond();
+        gpuMatrixMulTile<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
+        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
     }
+
+    printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by tile
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    if(grid.x == 0 || grid.y == 0){
+        unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
+        unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
+        dim3 grid(gridRows, gridCols);
+        dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+
+        iStart = cpuSecond();
+        gpuMatrixMul<< <grid, block >> > (d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
+    }
+    else{
+        iStart = cpuSecond();
+        gpuMatrixMulTile<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
+        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+    }
+    //printMatrix(h_odata, m, k);
+
+    printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by Coalescing
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulCoalescing<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+
+    printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by avoiding share memory bank conflict
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulBankConflict<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+
+    printf("gpu Matrix multiplication4\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+    
+
+    // GPU Matrix multiplication by tile, optimized by WPT
+    block.x = TILE_SIZE / WPT, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulTileWPT<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+    printf("gpu Matrix multiplication5\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by tile, optimized by WPT = 4
+    block.x = TILE_SIZE / 4, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulTileWPTop4<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+    printf("gpu Matrix multiplication5(WPT = 4)\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by tile, optimized by WPT = 8
+    block.x = TILE_SIZE / 8, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulTileWPTop8<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+    printf("gpu Matrix multiplication5(WPT = 8)\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by tile, optimized by Computational optimization4
+    if(m > 32){
+        block.x = TILE_SIZE, block.y = VEC_SIZE;
+        grid.x = k / (TILE_SIZE * VEC_SIZE), grid.y = m / TILE_SIZE;
+        //grid.x = (k + TILE_SIZE - 1) / TILE_SIZE, grid.y = (m + TILE_SIZE * VEC_SIZE - 1) / (TILE_SIZE * VEC_SIZE);
+        iStart = cpuSecond();
+        gpuMatrixComOpt<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
+        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+        printf("gpu Matrix multiplication6\t\telapsed %f sec. <<<grid %d block "
+        "%d>>>\n", iElaps, grid.x, block.x);
+        checkResult(h_C, h_odata, m * k);
+    }
+
+    // GPU Matrix multiplication by tile, optimized by Computational optimization8
+    if(m > 64){
+        block.x = TILE_SIZE, block.y = 8;
+        grid.x = k / (TILE_SIZE * 8), grid.y = m / TILE_SIZE;
+        iStart = cpuSecond();
+        gpuMatrixComOpt8<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+        CHECK(cudaDeviceSynchronize());
+        CHECK(cudaGetLastError());
+        iElaps = cpuSecond() - iStart;
+        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+        printf("gpu Matrix multiplication6\t\telapsed %f sec. <<<grid %d block "
+        "%d>>>\n", iElaps, grid.x, block.x);
+        checkResult(h_C, h_odata, m * k);
+    }
+    
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulPrefetch<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+
+    printf("gpu Matrix multiplication7\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    free(h_A);
+    free(h_B);
+    free(h_BT);
+    free(h_C);
+    free(h_odata);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_BT);
+    cudaFree(d_C);
+
+    return 0;
 }
