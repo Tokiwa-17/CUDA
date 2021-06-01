@@ -46,6 +46,7 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
     if(cIdx + k * ty + tx == 16){
         printf("%d\t%d\n", blockIdx.x, blockIdx.y);
         printf("%d\t%d\n", threadIdx.x, threadIdx.y);
+        cout << accu << endl;
     }
     d_C[cIdx + k * ty + tx] = accu;
 }
