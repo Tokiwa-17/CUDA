@@ -2,6 +2,8 @@
 #include <cuda_runtime.h>
 #include "../include/config.cuh"
 #include "../include/matrixCoalescing.cuh"
+#include <iostream>
+using namespace std;
 
 
 //矩阵的大小设置成TILE_SIZE 的倍数
@@ -34,6 +36,21 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
         B_tile[tx][ty] = d_B[j + k * ty + tx];
         //B_tile[tx][ty] = d_B[j + k * tx + ty];
         __syncthreads();
+
+        cout << "blockIdx.x:" << blockIdx.x << " blockIdx.y:" << blockIdx.y << endl;
+        for(int i = 0;i < TILE_SIZE;i++){
+            for(int j = 0;j < TILE_SIZE;j++)
+                cout << A_tile[i][j] << ' ';
+                cout << endl;
+        }
+        cout << endl;
+        for(int i = 0;i < TILE_SIZE;i++){
+            for(int j = 0;j < TILE_SIZE;j++)
+                cout << B_tile[i][j] << ' ';
+                cout << endl;
+        }
+        cout << endl;
+
 
         for(int k = 0;k < TILE_SIZE; k++)
             accu += A_tile[ty][k] * B_tile[k][tx];
