@@ -10,7 +10,7 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
     __shared__ int A_tileNxt[TILE_SIZE * TILE_SIZE];
     
     //register for result of C at each thread
-    int ctmp[TILE_SIZE] = {0};
+    int cval[TILE_SIZE] = {0};
 
     int aBegin = n * TILE_SIZE * by;
     int aEnd = aBegin + n - 1;
@@ -22,7 +22,7 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
     int *cur = A_tile;
     int *nxt = A_tileNxt;
     for(int i = 0;i < TILE_SIZE / VEC_SIZE;i++)
-        cur[(i * VEC_SIZE + ty) + TILE_SIZE * tx] = d_A[aBegin + K * (i * VEC_SIZE + ty) + tx];
+        cur[(i * VEC_SIZE + ty) + TILE_SIZE * tx] = d_A[aBegin + n * (i * VEC_SIZE + ty) + tx];
     
     __syncthreads();
 
@@ -39,7 +39,7 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
             for(int j = 0;j < TILE_SIZE;j++)
                 cval[j] += aptr[j] * bval;
             aptr += TILE_SIZE;
-            bptr += TILE_SIZE；
+            bptr += TILE_SIZE;
         }
         __syncthreads();
 
@@ -50,7 +50,7 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
     int c = k * TILE_SIZE * by + TILE_SIZE * VEC_SIZE * bx;
     c += TILE_SIZE * ty + tx;
     for(int i = 0;i < TILE_SIZE;i++){
-        h_C[c] = cval[i];
+        d_C[c] = cval[i];
         c += k;
     }
 }
