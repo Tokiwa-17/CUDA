@@ -21,9 +21,9 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
     int aBegin = blockIdx.y * TILE_SIZE * n;
     int aEnd = aBegin + n - 1;
     int aStride = TILE_SIZE;
-
-    int bBegin = blockIdx.y * TILE_SIZE * k;
-    int bStride = TILE_SIZE;
+    
+    int bBegin = TILE_SIZE * bx;
+    int bStride = TILE_SIZE * k;
 
     int accu = 0;
 
@@ -43,10 +43,5 @@ __global__ void gpuMatrixMulCoalescing(int* d_A, int* d_B, int* d_C, int m, int 
     }
     //A中横着的一行和B中竖着的一列累加完毕放到C中对应位置
     int cIdx = k * TILE_SIZE * by + TILE_SIZE * bx;
-    if(cIdx + k * ty + tx == 16){
-        printf("%d\t%d\n", blockIdx.x, blockIdx.y);
-        printf("%d\t%d\n", threadIdx.x, threadIdx.y);
-        cout << accu << endl;
-    }
     d_C[cIdx + k * ty + tx] = accu;
 }
