@@ -13,6 +13,7 @@
 #include "./include/matrixTranspose.cuh"
 #include "./include/matrixComOpt.cuh"
 #include "./include/cpuMatrixStrassen.cuh"
+#include "./include/matrixPrefetch.cuh"
 //#include "./include/gpuMatrixStrassen.cuh"
 using namespace std;
 // Include local CUDA header files.
@@ -250,6 +251,19 @@ int main(int argc, char ** argv){
         checkResult(h_C, h_odata, m * k);
     }
     
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulPrefetch<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+
+    printf("gpu Matrix multiplication7\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
     free(h_A);
     free(h_B);
     free(h_BT);
