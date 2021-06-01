@@ -180,7 +180,7 @@ int main(int argc, char ** argv){
     checkResult(h_C, h_odata, m * k);
     
 
-    /*// GPU Matrix multiplication by tile, optimized by WPT
+    // GPU Matrix multiplication by tile, optimized by WPT
     block.x = TILE_SIZE / WPT, block.y = TILE_SIZE;
     grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
     iStart = cpuSecond();
@@ -249,7 +249,7 @@ int main(int argc, char ** argv){
         "%d>>>\n", iElaps, grid.x, block.x);
         checkResult(h_C, h_odata, m * k);
     }
-    */
+    
     free(h_A);
     free(h_B);
     free(h_BT);
