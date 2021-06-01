@@ -8,6 +8,7 @@
 #include "./include/matrixNaive.cuh"
 #include "./include/matrixTile.cuh"
 #include "./include/matrixCoalescing.cuh"
+#include "./include/matrixBankConflict.cuh"
 #include "./include/matrixTileWPT.cuh"
 #include "./include/matrixTranspose.cuh"
 #include "./include/matrixComOpt.cuh"
@@ -151,39 +152,24 @@ int main(int argc, char ** argv){
     checkResult(h_C, h_odata, m * k);
 
     // GPU Matrix multiplication by Coalescing
-    /*block.x = TILE_SIZE, block.y = TILE_SIZE;
-    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
-    if(grid.x == 0 || grid.y == 0){
-        unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
-        unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
-        dim3 grid(gridRows, gridCols);
-        dim3 block(BLOCK_SIZE, BLOCK_SIZE);
-
-        iStart = cpuSecond();
-        gpuMatrixMulCoalescing<< <grid, block >> > (d_A, d_BT, d_C, m, n, k);
-        CHECK(cudaDeviceSynchronize());
-        CHECK(cudaGetLastError());
-        iElaps = cpuSecond() - iStart;
-    }
-    else{
-        iStart = cpuSecond();
-        gpuMatrixMulCoalescing<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
-        CHECK(cudaDeviceSynchronize());
-        CHECK(cudaGetLastError());
-        iElaps = cpuSecond() - iStart;
-        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    }
-
-    printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
-    "%d>>>\n", iElaps, grid.x, block.x);
-    checkResult(h_C, h_odata, m * k);
-    */
-
-    // GPU Matrix multiplication by Coalescing
     block.x = TILE_SIZE, block.y = TILE_SIZE;
     grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
     iStart = cpuSecond();
     gpuMatrixMulCoalescing<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
+    CHECK(cudaDeviceSynchronize());
+    CHECK(cudaGetLastError());
+    iElaps = cpuSecond() - iStart;
+    CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
+
+    printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
+    "%d>>>\n", iElaps, grid.x, block.x);
+    checkResult(h_C, h_odata, m * k);
+
+    // GPU Matrix multiplication by avoiding share memory bank conflict
+    block.x = TILE_SIZE, block.y = TILE_SIZE;
+    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    iStart = cpuSecond();
+    gpuMatrixMulBankConflict<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
