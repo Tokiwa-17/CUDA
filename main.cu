@@ -116,7 +116,6 @@ int main(int argc, char ** argv){
         iElaps = cpuSecond() - iStart;
         CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
     }
-    printMatrix(h_odata, m, k);
 
     printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
@@ -174,7 +173,6 @@ int main(int argc, char ** argv){
         iElaps = cpuSecond() - iStart;
         CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
     }
-    printMatrix(h_odata, m, k);
 
     printf("gpu Matrix multiplication3\t\telapsed %f sec. <<<grid %d block "
     "%d>>>\n", iElaps, grid.x, block.x);
