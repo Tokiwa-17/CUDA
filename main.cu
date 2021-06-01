@@ -254,7 +254,7 @@ int main(int argc, char ** argv){
     block.x = TILE_SIZE, block.y = TILE_SIZE;
     grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
     iStart = cpuSecond();
-    gpuMatrixMulPrefetch<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
+    gpuMatrixMulPrefetch<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
     CHECK(cudaGetLastError());
     iElaps = cpuSecond() - iStart;
