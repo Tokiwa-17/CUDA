@@ -168,7 +168,7 @@ int main(int argc, char ** argv){
     }
     else{
         iStart = cpuSecond();
-        gpuMatrixMulTile<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
+        gpuMatrixMulCoalescing<<<grid, block>>>(d_A, d_BT, d_C, m, n, k);
         CHECK(cudaDeviceSynchronize());
         CHECK(cudaGetLastError());
         iElaps = cpuSecond() - iStart;
