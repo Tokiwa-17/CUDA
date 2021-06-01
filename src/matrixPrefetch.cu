@@ -10,8 +10,8 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
     __shared__ int A_tileNxt[TILE_SIZE * TILE_SIZE];
     
     //register for result of C at each thread
-    int cval[TILE_SIZE];
-    for(int i = 0;i < cval;i++) cval[i] = 0;
+    volatile int cval[TILE_SIZE];
+    for(int i = 0;i < TILE_SIZE;i++) cval[i] = 0;
 
     int aBegin = n * TILE_SIZE * by;
     int aEnd = aBegin + n - 1;
