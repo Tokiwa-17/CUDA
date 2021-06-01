@@ -251,8 +251,9 @@ int main(int argc, char ** argv){
         checkResult(h_C, h_odata, m * k);
     }
     
-    block.x = TILE_SIZE, block.y = TILE_SIZE;
-    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
+    // GPU Matrix multiplication by prefetching
+    block.x = TILE_SIZE, block.y = VEC_SIZE;
+    grid.x = k / TILE_SIZE / VEC_SIZE, grid.y = m / TILE_SIZE;
     iStart = cpuSecond();
     gpuMatrixMulPrefetch<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
     CHECK(cudaDeviceSynchronize());
