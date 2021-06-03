@@ -4,7 +4,7 @@
 #include "../include/matrixPrefetch.cuh"
 
 __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n, int k){
-    /*int bx = blockIdx.x, by = blockIdx.y;
+    int bx = blockIdx.x, by = blockIdx.y;
     int tx = threadIdx.x, ty = threadIdx.y;
     __shared__ int A_tile[TILE_SIZE * TILE_SIZE];
     __shared__ int A_tileNxt[TILE_SIZE * TILE_SIZE];
@@ -53,6 +53,6 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
         d_C[cPos] = cval[i];
         cPos += k;
     }
-    */
     
+
 }
