@@ -8,7 +8,7 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
     int tx = threadIdx.x, ty = threadIdx.y;
     __shared__ int A_tile[TILE_SIZE * TILE_SIZE];
     __shared__ int A_tileNxt[TILE_SIZE * TILE_SIZE];
-    
+    /*
     //register for result of C at each thread
     volatile int cval[TILE_SIZE];
     for(int i = 0;i < TILE_SIZE;i++) cval[i] = 0;
@@ -53,6 +53,6 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
         d_C[cPos] = cval[i];
         cPos += k;
     }
-    
+    */
 
 }
