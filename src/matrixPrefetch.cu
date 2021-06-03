@@ -61,7 +61,7 @@ __global__ void gpuMatrixMulPrefetch(int *A, int *B, int *C, int M, int K, int N
 	 * Perform outer product of Asub and Bsub.
 	 * Specifically:
 	 *   Asub: TILE_SIZE * TILE_SIZE
-	 *   Bsub: TILE_SIZE * (TILE_SIZE * VECTOR_SIZE)
+	 *   Bsub: TILE_SIZE * (TILE_SIZE * VEC_SIZE)
 	 * 
 	 * Before calculating the submatrix, load the next TILE * TILE
 	 * submatrix of A into register.
@@ -84,13 +84,13 @@ __global__ void gpuMatrixMulPrefetch(int *A, int *B, int *C, int M, int K, int N
 	int aEnd = aBegin + K - 1;
 	int aStep = TILE_SIZE;
 
-	int bBegin = TILE_SIZE * VECTOR_SIZE * bx;
+	int bBegin = TILE_SIZE * VEC_SIZE * bx;
 	int bStep = TILE_SIZE * N;
 
-	int t = VECTOR_SIZE;
+	int t = VEC_SIZE;
 	int *cur = As;
 	int *nxt = next_As;
-	for (int i = 0; i < TILE_SIZE / VECTOR_SIZE; ++i) {
+	for (int i = 0; i < TILE_SIZE / VEC_SIZE; ++i) {
 		cur[ (i*t+ty) + TILE_SIZE * tx] = A[aBegin + K*(i*t+ty) + tx];
 	}
 	__syncthreads();
@@ -99,7 +99,7 @@ __global__ void gpuMatrixMulPrefetch(int *A, int *B, int *C, int M, int K, int N
 		// Load the next submatrix to another register files.
 		// Should check the out-of-range indexing to avoid kernel crash.
 		if (a+aStep <= aEnd) {
-		    for (int i = 0; i < TILE_SIZE / VECTOR_SIZE; ++i) {
+		    for (int i = 0; i < TILE_SIZE / VEC_SIZE; ++i) {
 				nxt[ (i*t)+ty + TILE_SIZE * tx] = A[a + K*(i*t+ty) + tx + aStep];
 			}
 		}
@@ -124,7 +124,7 @@ __global__ void gpuMatrixMulPrefetch(int *A, int *B, int *C, int M, int K, int N
 		nxt = tmp;
 	}
 
-	int c = N * TILE_SIZE * by + TILE_SIZE * VECTOR_SIZE * bx;
+	int c = N * TILE_SIZE * by + TILE_SIZE * VEC_SIZE * bx;
 	c += TILE_SIZE * ty + tx;
 	for (int i = 0; i < TILE_SIZE; ++i) {
 		C[c] = cv[i];
