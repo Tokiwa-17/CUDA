@@ -3,7 +3,7 @@
 #include "../include/config.cuh"
 #include "../include/matrixPrefetch.cuh"
 
-__global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n, int k){
+/*__global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n, int k){
     int bx = blockIdx.x, by = blockIdx.y;
     int tx = threadIdx.x, ty = threadIdx.y;
     __shared__ int A_tile[TILE_SIZE * TILE_SIZE];
@@ -53,4 +53,81 @@ __global__ void gpuMatrixMulPrefetch(int* d_A, int* d_B, int* d_C, int m, int n,
         d_C[cPos] = cval[i];
         cPos += k;
     }
+}
+*/
+
+__global__ void gpuMatrixMulPrefetch(int *A, int *B, int *C, int M, int K, int N) {
+	/* Prefetching method.
+	 * Perform outer product of Asub and Bsub.
+	 * Specifically:
+	 *   Asub: TILE_SIZE * TILE_SIZE
+	 *   Bsub: TILE_SIZE * (TILE_SIZE * VECTOR_SIZE)
+	 * 
+	 * Before calculating the submatrix, load the next TILE * TILE
+	 * submatrix of A into register.
+	 *
+	 * After calculating, just swap the pointer to exchange the submatrix.
+	 */
+	int bx = blockIdx.x, by = blockIdx.y;
+	int tx = threadIdx.x, ty = threadIdx.y;
+
+	// Allocate As and next_As as column-major array
+	__shared__ int As[TILE_SIZE * TILE_SIZE];
+	__shared__ int next_As[TILE_SIZE * TILE_SIZE];
+
+	// Allocate register files for sub-result of C at each thread.
+	int cv[TILE_SIZE] = {0};
+
+	// Iteration parameters is similar with 
+	// computational optimization method.
+	int aBegin = K * TILE_SIZE * by;
+	int aEnd = aBegin + K - 1;
+	int aStep = TILE_SIZE;
+
+	int bBegin = TILE_SIZE * VECTOR_SIZE * bx;
+	int bStep = TILE_SIZE * N;
+
+	int t = VECTOR_SIZE;
+	int *cur = As;
+	int *nxt = next_As;
+	for (int i = 0; i < TILE_SIZE / VECTOR_SIZE; ++i) {
+		cur[ (i*t+ty) + TILE_SIZE * tx] = A[aBegin + K*(i*t+ty) + tx];
+	}
+	__syncthreads();
+
+	for (int a = aBegin, b = bBegin; a <= aEnd; a += aStep, b += bStep) {
+		// Load the next submatrix to another register files.
+		// Should check the out-of-range indexing to avoid kernel crash.
+		if (a+aStep <= aEnd) {
+		    for (int i = 0; i < TILE_SIZE / VECTOR_SIZE; ++i) {
+				nxt[ (i*t)+ty + TILE_SIZE * tx] = A[a + K*(i*t+ty) + tx + aStep];
+			}
+		}
+		int *ap = cur;
+		int *bp = &B[b + TILE_SIZE * ty + tx];
+
+		for (int i = 0; i < TILE_SIZE; ++i) {
+			int bv = *bp;
+			for (int j = 0; j < TILE_SIZE; ++j) {
+				cv[j] += ap[j] * bv;
+			}
+			ap += TILE_SIZE;
+			bp += N;
+		}
+		__syncthreads();
+
+		// Swap current submatrix and next submatrix.
+		// Note that you can't directly assign nxt to cur, which
+		// will change cur and nxt simultaneously at the next loop.
+		int *tmp = cur;
+		cur = nxt;
+		nxt = tmp;
+	}
+
+	int c = N * TILE_SIZE * by + TILE_SIZE * VECTOR_SIZE * bx;
+	c += TILE_SIZE * ty + tx;
+	for (int i = 0; i < TILE_SIZE; ++i) {
+		C[c] = cv[i];
+		c += N;
+	}
 }
