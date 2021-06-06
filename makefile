@@ -51,7 +51,7 @@ INC_DIR = include
 EXE = main
 
 # Object files:
-OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/matrixNaive.o $(OBJ_DIR)/matrixTile.o $(OBJ_DIR)/matrixTileWPT.o $(OBJ_DIR)/til.o $(OBJ_DIR)/matrixTranspose.o $(OBJ_DIR)/matrixComOpt.o $(OBJ_DIR)/cpuMatrixStrassen.o $(OBJ_DIR)/gpuMatrixCublas.o $(OBJ_DIR)/matrixCoalescing.o $(OBJ_DIR)/matrixBankConflict.o $(OBJ_DIR)/matrixPrefetch.o
+OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/matrixNaive.o $(OBJ_DIR)/matrixTile.o $(OBJ_DIR)/matrixTileWPT.o $(OBJ_DIR)/util.o $(OBJ_DIR)/matrixTranspose.o $(OBJ_DIR)/matrixComOpt.o $(OBJ_DIR)/cpuMatrixStrassen.o $(OBJ_DIR)/gpuMatrixCublas.o $(OBJ_DIR)/matrixCoalescing.o $(OBJ_DIR)/matrixBankConflict.o $(OBJ_DIR)/matrixPrefetch.o
 
 ##########################################################
 
