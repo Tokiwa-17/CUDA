@@ -125,35 +125,6 @@ int main(int argc, char ** argv){
     "%d>>>\n", iElaps, grid.x, block.x);
     checkResult(h_C, h_odata, m * k);
 
-    // GPU Matrix multiplication by tile
-    block.x = TILE_SIZE, block.y = TILE_SIZE;
-    grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
-    if(grid.x == 0 || grid.y == 0){
-        unsigned int gridRows = (m + BLOCK_SIZE - 1) / BLOCK_SIZE;
-        unsigned int gridCols = (k + BLOCK_SIZE - 1) / BLOCK_SIZE;
-        dim3 grid(gridRows, gridCols);
-        dim3 block(BLOCK_SIZE, BLOCK_SIZE);
-
-        iStart = cpuSecond();
-        gpuMatrixMul<< <grid, block >> > (d_A, d_B, d_C, m, n, k);
-        CHECK(cudaDeviceSynchronize());
-        CHECK(cudaGetLastError());
-        iElaps = cpuSecond() - iStart;
-    }
-    else{
-        iStart = cpuSecond();
-        gpuMatrixMulTile<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
-        CHECK(cudaDeviceSynchronize());
-        CHECK(cudaGetLastError());
-        iElaps = cpuSecond() - iStart;
-        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-    }
-    //printMatrix(h_odata, m, k);
-
-    printf("gpu Matrix multiplication2\t\telapsed %f sec. <<<grid %d block "
-    "%d>>>\n", iElaps, grid.x, block.x);
-    checkResult(h_C, h_odata, m * k);
-
     // GPU Matrix multiplication by Coalescing
     block.x = TILE_SIZE, block.y = TILE_SIZE;
     grid.x = k / TILE_SIZE, grid.y = m / TILE_SIZE;
