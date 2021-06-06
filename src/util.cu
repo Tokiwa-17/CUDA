@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
-#include "../include/til.cuh"
+#include "../include/util.cuh"
 #include "../include/config.cuh"
 
 void cpuMatrixMul(int *h_A, int * h_B, int* h_C, int m, int n, int k){
