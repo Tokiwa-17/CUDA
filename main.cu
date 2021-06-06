@@ -209,21 +209,6 @@ int main(int argc, char ** argv){
         checkResult(h_C, h_odata, m * k);
     }
 
-    // GPU Matrix multiplication by tile, optimized by Computational optimization8
-    if(m > 64){
-        block.x = TILE_SIZE, block.y = 8;
-        grid.x = k / (TILE_SIZE * 8), grid.y = m / TILE_SIZE;
-        iStart = cpuSecond();
-        gpuMatrixComOpt8<<<grid, block>>>(d_A, d_B, d_C, m, n, k);
-        CHECK(cudaDeviceSynchronize());
-        CHECK(cudaGetLastError());
-        iElaps = cpuSecond() - iStart;
-        CHECK(cudaMemcpy(h_odata, d_C, sizeof(int) *(m * k), cudaMemcpyDeviceToHost));
-        printf("gpu Matrix multiplication6\t\telapsed %f sec. <<<grid %d block "
-        "%d>>>\n", iElaps, grid.x, block.x);
-        checkResult(h_C, h_odata, m * k);
-    }
-    
     // GPU Matrix multiplication by prefetching
     //block.x = TILE_SIZE, block.y = 8;
     //grid.x = k / (TILE_SIZE * 8), grid.y = m / TILE_SIZE;
