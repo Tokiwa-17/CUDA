@@ -3,7 +3,7 @@
 #include <iostream>
 #include "../include/gpuMatrixCublas.cuh"
 #include "../include/config.cuh"
-#include "../include/til.cuh"
+#include "../include/util.cuh"
 using namespace std;
 
 void gpuMatrixCublas(int* A, int* B, int* C, int lda, int ldb, int ldc,
