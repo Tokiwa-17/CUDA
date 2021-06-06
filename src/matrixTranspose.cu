@@ -1,5 +1,5 @@
 #include "../include/config.cuh"
-#include "../include/til.cuh"
+#include "../include/util.cuh"
 #include "../include/matrixTranspose.cuh"
 
 void matrixTranspose(int *A, int *B, int m, int n){
